@@ -2,6 +2,40 @@ use serde::Serialize;
 use serde_json::Value;
 use std::collections::BTreeMap;
 
+// struct StyleWrapper<'a>(&'a Style);
+// impl<'a> StyleWrapper<'a> {
+//     fn _print(diff: &Diff, depth: usize, f: &mut DebugStruct) {
+//         match diff {
+//             Diff::Added(_) => {}
+//             Diff::Removed(_) => {}
+//             Diff::Changed { old, new } => {
+//                 let _ = f.field(&format!("{} {} => {}", " ".repeat(depth + 3), old, new), &1);
+//             }
+//             Diff::Children(btree_map) => {
+//                 for (s, diff) in btree_map {
+//                     let _ = f.field(&format!("{} {}:", "-".repeat(depth + 1), s), &1);
+//                     Self::_print(diff, depth + 2, f);
+//                 }
+//             }
+//         }
+//     }
+// }
+
+// impl<'a> Debug for StyleWrapper<'a> {
+//     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+//         let mut fx = f.debug_struct("Style");
+//         let default_style = Style::default();
+//         let diff = Diff::new(&default_style, self.0);
+//         Self::_print(&diff, 0, &mut fx);
+
+//         fx.finish()
+//         //     .field("style", self.0.)
+//         //     .field("id", &self.id)
+//         //     .field("children", &self.children)
+//         //     .finish()
+//     }
+// }
+
 #[derive(Debug)]
 pub enum Diff {
     Added(Value),

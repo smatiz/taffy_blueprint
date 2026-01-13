@@ -24,7 +24,8 @@ license = "MIT"
 [dependencies]
 taffy = { version = "0.9.2", features = ["serde"] }
 serde = { version = "1.0.228", features = ["derive"] }
-# serde_json = "1.0.149"
+macroquad = { version = "0.4.14", optional = true }
+serde_json = { version = "1.0.149", optional = true }
 
 # [package.metadata.docs.rs]
 # # To test all the documentation related features, run:
@@ -40,8 +41,12 @@ default = []
 debug = []
 release = []
 for_test = []
+use_macroquad = ["macroquad"]
+use_json = ["serde_json"]
 
-# [dev-dependencies]
+[dev-dependencies]
+macroquad = "0.4.14"
+serde_json = "1.0.149"
 # serde_json = "1.0.93"
 # taffy_test_helpers = { path = "tests/common" }
 
@@ -63,7 +68,7 @@ for_test = []
 # doc-scrape-examples = true
 
 [workspace]
-members = []
+# members = ["taffy_macroquad"]
 # The cosmic_text example and benches are excluded from the workspace as including them breaks compilation
 # of all crates in the workspace with our MSRV compiler
 # exclude = ["examples/cosmic_text", "benches"]

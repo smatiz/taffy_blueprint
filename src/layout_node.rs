@@ -1,48 +1,11 @@
 use crate::h_taffy::style_auto;
-use serde::Serialize;
+use crate::prelude::*;
+use serde::{Deserialize, Serialize};
 
 use super::*;
-use std::collections::HashMap;
-
 use taffy::prelude::*;
 
-#[derive(Clone, Debug)]
-pub struct TaffyRectNode {
-    rect: Rect<f32>,
-    children: HashMap<String, Box<TaffyRectNode>>,
-}
-impl TaffyRectNode {
-    pub fn new(rect: Rect<f32>, children: HashMap<String, Box<TaffyRectNode>>) -> Self {
-        Self { rect, children }
-    }
-    pub fn get_child(&self, s: &str) -> Option<&TaffyRectNode> {
-        self.children.get(s).map(|x| &**x)
-    }
-    pub fn get_all(&self) -> &HashMap<String, Box<TaffyRectNode>> {
-        &self.children
-    }
-    pub fn rect(&self) -> &Rect<f32> {
-        &self.rect
-    }
-    fn _print(n: &Self, name: &str, depth: usize) {
-        println!(
-            "{} >{}< {:?} ({})",
-            "-".repeat(depth),
-            name,
-            n.rect,
-            n.children.len()
-        );
-        for (name, n) in n.children.iter() {
-            Self::_print(n, name, depth + 1);
-        }
-    }
-
-    pub fn print(&self, name: &str) {
-        Self::_print(self, name, 0);
-    }
-}
-
-#[derive(Default, Clone, Serialize)]
+#[derive(Default, Debug, Clone, Deserialize, Serialize)]
 pub struct LayoutNode {
     pub(crate) style: Style,
     pub(crate) id: String,
@@ -93,9 +56,6 @@ pub struct LayoutNode {
 // }
 
 impl LayoutNode {
-    // pub fn macroquad_rect(&self, taffy: &mut TaffyTree) -> TaffyRectNode {
-    //     TaffyNode::macroquad_rect(self, taffy)
-    // }
     pub fn root_size(&self) -> taffy::Size<f32> {
         TaffyNode::root_size(self)
     }
@@ -163,19 +123,6 @@ impl LayoutNode {
         Self::anonym(style, vec![])
     }
 
-    // pub fn screen_root(wrapped: Self) -> Self {
-    //     LayoutNode::new(
-    //         "screen".to_string(),
-    //         Style {
-    //             size: Size {
-    //                 width: length(macroquad::window::screen_width()),
-    //                 height: length(macroquad::window::screen_height()),
-    //             },
-    //             ..Default::default()
-    //         },
-    //         vec![wrapped],
-    //     )
-    // }
     pub fn dimension(width: Dimension, height: Dimension) -> Self {
         Self {
             style: Style {

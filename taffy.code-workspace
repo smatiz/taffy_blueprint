@@ -22,6 +22,8 @@
 		"workbench.panel.defaultLocation": "right",
         "rust-analyzer.cargo.extraArgs": [],
         "rust-analyzer.cargo.features": [
+			"use_macroquad",
+			 "use_json"
 			//"for_test",
 			// "use_uidebug",
 		], 
