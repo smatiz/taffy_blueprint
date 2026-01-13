@@ -23,7 +23,8 @@
         "rust-analyzer.cargo.extraArgs": [],
         "rust-analyzer.cargo.features": [
 			"use_macroquad",
-			 "use_json"
+			 "use_json",
+			 
 			//"for_test",
 			// "use_uidebug",
 		], 
@@ -84,7 +85,7 @@
 			"command": "cargo build --features 'debug'"
 		    },
 		    "windows": {
-			"command": "cargo build --features 'debug'"
+			"command": "cargo build  --features use_json --features use_macroquad"
 		    },
 		    "args": [],
 		    "group": "build",
@@ -104,10 +105,11 @@
 		    "label": "run",
 		    "type": "shell",
 		    "linux": {
-			"command": "cargo run --features 'debug'"
+			"command": "cargo run --example json_hot_reloading --features use_json --features use_macroquad"
 		    },
 		    "windows": {
-			"command": "cargo run --features 'debug'"
+			"command": "cargo run --example json_hot_reloading --features use_json --features use_macroquad"
+
 		    },
 		    "args": [],
 		    "group": "build",
