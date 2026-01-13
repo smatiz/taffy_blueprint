@@ -1,0 +1,219 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	 "settings": { 
+/////////////////////////////////////////////////
+// "rust-analyzer.checkOnSave": true,
+// "rust-analyzer.procMacro.enable": true,
+// "rust-analyzer.imports.granularity.group": "module",
+// "rust-analyzer.imports.prefix": "crate",
+// /////////////////////////////////////////////////
+// "rust-analyzer.completion.autoimport.enable": true,
+// "rust-analyzer.completion.callable.snippets": "fill_arguments",
+// "rust-analyzer.completion.postfix.enable": true,
+///////////////////////////////////////////////
+
+
+		"scm.diffDecorations": "all",
+		"terminal.integrated.defaultLocation": "editor",
+		"workbench.panel.defaultLocation": "right",
+        "rust-analyzer.cargo.extraArgs": [],
+        "rust-analyzer.cargo.features": [
+			//"for_test",
+			// "use_uidebug",
+		], 
+        //   "rust-analyzer.cargo.noDefaultFeatures": true,
+        "rust-analyzer.cargo.cfgs": [
+            // "debug_assertions"
+        ],
+        // "not(debug_assertions)",
+        "editor.fontSize": 32,
+        "editor.mouseWheelZoom": true,
+  "workbench.colorTheme": "Default Dark Modern",
+        "[rust]": {
+            "editor.defaultFormatter": "rust-lang.rust-analyzer",
+            "editor.formatOnSave": true,
+            "editor.inlayHints.enabled": "offUnlessPressed",
+            "editor.semanticHighlighting.enabled": false,
+            "editor.mouseWheelZoom": true,
+            "editor.wordBasedSuggestions": "off",
+            "editor.quickSuggestionsDelay": 200,
+        },
+        "files.watcherExclude": {
+         
+        },
+        "files.exclude": {
+    		"target": true,
+    		"Cargo.lock": true,
+        },
+        "search.exclude": {
+			"target":true,
+		},
+        "jupyter.widgetScriptSources": [
+            "jsdelivr.com",
+            "unpkg.com"
+        ],
+        "editor.defaultFoldingRangeProvider": null,
+        "editor.defaultFormatter": null,
+        "todo-tree.regex.regex": "(//|#|<!--|;|/\\*|^|^[ \\t]*(-|\\d+.))\\s*($TAGS)",
+        "[json]": {
+            "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+    },
+    "tasks": {
+        "version": "2.0.0",
+		"inputs": [ 
+		{ 
+			"id": "buildMode", 
+			"type": "pickString", 
+			"options": ["'release' --release", "'debug' "], 
+			"default": "",
+			"description": "build mode"
+		} 
+		],
+		"tasks": [
+		{
+		    "label": "build",
+		    "type": "shell",
+		    "linux": {
+			"command": "cargo build --features 'debug'"
+		    },
+		    "windows": {
+			"command": "cargo build --features 'debug'"
+		    },
+		    "args": [],
+		    "group": "build",
+		    "problemMatcher": [],
+		    "options": {
+			"cwd": "${workspaceFolder}",
+			"statusbar": {
+			    "color": "#8db9d3",
+			    "label": "build"
+			}
+		    },
+		    "presentation": {
+			"clear": true
+		    }
+		},
+		{
+		    "label": "run",
+		    "type": "shell",
+		    "linux": {
+			"command": "cargo run --features 'debug'"
+		    },
+		    "windows": {
+			"command": "cargo run --features 'debug'"
+		    },
+		    "args": [],
+		    "group": "build",
+		    "problemMatcher": [],
+		    "options": {
+			"cwd": "${workspaceFolder}",
+			"statusbar": {
+			    "color": "#8db9d3",
+			    "label": "run"
+			}
+		    },
+		    "presentation": {
+			"clear": true
+		    }
+		},
+		{
+		    "label": "run +",
+		    "type": "shell",
+		    "linux": {
+			"command": "RUST_BACKTRACE='full' cargo run  --features 'debug'"
+		    },
+		    "windows": {
+			"command": "$env:RUST_BACKTRACE='full';cargo run  --features 'debug'"
+		    },
+		    "args": [],
+		    "group": "build",
+		    "problemMatcher": [],
+		    "options": {
+			"cwd": "${workspaceFolder}",
+			"statusbar": {
+			    "color": "#8db9d3",
+			    "label": "run +"
+			}
+		    },
+		    "presentation": {
+			"clear": true
+		    }
+		},
+		{
+		    "label": "test",
+		    "type": "shell",
+		    "linux": {
+			"command": "python3 ${workspaceFolder}/launch_test.py 1  ${workspaceFolder}",
+		    },
+		    "windows": {
+			"command": "python ${workspaceFolder}/launch_test.py 1  ${workspaceFolder}",
+		    },
+		    "args": [],
+		    "group": "build",
+		    "problemMatcher": [],
+		    "options": {
+			"cwd": "${workspaceFolder}",
+			"statusbar": {
+			    "color": "#06e25b",
+			    "label": "$(runtime-extensions-editor-label-icon) test"
+			},
+		    },
+		    "presentation": {
+			"clear": true
+		    }
+		},
+		{
+		    "label": "check",
+		    "type": "shell",
+		    "linux": {
+			"command": "cargo check --target-dir target/_check2 --features ${input:buildMode}" 
+		    },
+		    "windows": {
+			"command": "cargo check --target-dir target/_check2 --features ${input:buildMode}"
+		    },
+		    "args": [],
+		    "group": "build",
+		    "problemMatcher": [],
+		    "options": {
+			"cwd": "${workspaceFolder}",
+			"statusbar": {
+			    "color": "#8db9d3",
+			    "label": "$(runtime-extensions-editor-label-icon) check",
+			    "detail": "tooltip for <b>statusbar</b>"
+			}
+		    },
+		    "presentation": {
+			"clear": true
+		    }
+		},
+		{
+		    "label": "clippy",
+		    "type": "shell",
+		    "linux": {
+			"command": "cargo clippy  --features ${input:buildMode}"
+		    },
+		    "windows": {
+			"command": "cargo clippy  --features ${input:buildMode}"
+		    },
+		    "args": [],
+		    "group": "build",
+		    "problemMatcher": [],
+		    "options": {
+			"cwd": "${workspaceFolder}",
+			"statusbar": {
+			    "color": "#b2d38d",
+			    "label": "clippy"
+			}
+		    },
+		    "presentation": {
+			"clear": true
+		    }
+		},
+	    ]
+    }
+}
