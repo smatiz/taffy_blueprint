@@ -2,50 +2,90 @@ use serde::{Deserialize, Serialize};
 use taffy::{prelude::*, Overflow, Point, TextAlign};
 
 use crate::json::helper_convertion;
-
+fn default_one() -> f32 {
+    1.0
+}
 #[derive(Default, Debug, Clone, Deserialize, Serialize)]
 pub struct StyleJson {
+    #[serde(default)]
     pub display: Display,
+    #[serde(default)]
     pub item_is_table: bool,
+    #[serde(default)]
     pub item_is_replaced: bool,
+    #[serde(default)]
     pub box_sizing: BoxSizing,
+    #[serde(default)]
     pub overflow: Point<Overflow>,
+    #[serde(default)]
     pub scrollbar_width: f32,
+    #[serde(default)]
     pub position: Position,
+    #[serde(default)]
     pub inset: Rect<String>,
 
+    #[serde(default)]
     pub size: Size<String>,
+    #[serde(default)]
     pub min_size: Size<String>,
+    #[serde(default)]
     pub max_size: Size<String>,
+    #[serde(default)]
     pub aspect_ratio: Option<f32>,
 
+    #[serde(default)]
     pub margin: Rect<String>,
+    #[serde(default)]
     pub padding: Rect<String>,
+    #[serde(default)]
     pub border: Rect<String>,
 
+    #[serde(default)]
     pub align_items: Option<AlignItems>,
+    #[serde(default)]
     pub align_self: Option<AlignSelf>,
+    #[serde(default)]
     pub justify_items: Option<AlignItems>,
+    #[serde(default)]
     pub justify_self: Option<AlignSelf>,
+    #[serde(default)]
     pub align_content: Option<AlignContent>,
+    #[serde(default)]
     pub justify_content: Option<JustifyContent>,
+    #[serde(default)]
     pub gap: Size<String>,
+    #[serde(default)]
     pub text_align: TextAlign,
 
+    #[serde(default)]
     pub flex_direction: FlexDirection,
+    #[serde(default)]
     pub flex_wrap: FlexWrap,
+    #[serde(default)]
     pub flex_basis: String,
+    #[serde(default)]
     pub flex_grow: f32,
+    #[serde(default = "default_one")]
     pub flex_shrink: f32,
+    #[serde(default)]
     pub grid_template_rows: Vec<String>,
+    #[serde(default)]
     pub grid_template_columns: Vec<String>,
+    #[serde(default)]
     pub grid_auto_rows: Vec<String>,
+    #[serde(default)]
     pub grid_auto_columns: Vec<String>,
+    #[serde(default)]
     pub grid_auto_flow: GridAutoFlow,
+    #[serde(default)]
     pub grid_template_areas: Vec<String>,
+    #[serde(default)]
     pub grid_template_column_names: Vec<Vec<String>>,
+    #[serde(default)]
     pub grid_template_row_names: Vec<Vec<String>>,
+    #[serde(default)]
     pub grid_row: (String, String),
+    #[serde(default)]
     pub grid_column: (String, String),
 }
 
@@ -126,6 +166,7 @@ fn to_grid_template_components(s: Vec<String>) -> Vec<GridTemplateComponent<Stri
 
 impl From<StyleJson> for Style {
     fn from(s: StyleJson) -> Self {
+        println!("s.justify_content {:?}", s.justify_content);
         Style {
             display: s.display,
             item_is_table: s.item_is_table,

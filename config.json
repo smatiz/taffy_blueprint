@@ -1,0 +1,34 @@
+{
+  "id": "",
+  "style": {
+    "size": {
+      "width": "100.0%",
+      "height": "100.0%"
+    },
+    "justify_content": "Center",
+    "align_items": "Center"
+  },
+  "children": [
+    {
+      "id": "root",
+      "style": {
+        "size": {
+          "width": "200.0",
+          "height": "100.0"
+        },
+        "justify_content": "Center"
+      },
+      "children": [
+        {
+          "id": "leaf",
+          "style": {
+            "size": {
+              "width": "50%",
+              "height": "*"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
