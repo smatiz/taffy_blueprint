@@ -39,36 +39,33 @@ fn conf() -> Conf {
 // }
 #[macroquad::main(conf)]
 async fn main() {
-    let node = serde_json::from_str::<LayoutNode>(
+    let node = LayoutJson::create_node(
         r#"
-    LayoutNode {
+         {
             id:"",
             style: {
-                size: Size {
-                    width: percent(1.0),
-                    height: percent(1.0),
+                size: {
+                    width: "100.0%",
+                    height: "100.0%",
                 },
-                justify_content:  None,
-                    // Some(JustifyContent::Center),
-                align_items: None,
-                    //  Some(AlignItems::Center),
+                justify_content: Center,
+                align_items: Center,
             },
             children: [{
                  id:"root",
                  style: {
                     size:  {
-                        width: length(100.0),
-                        height: length(100.0),
+                        width: 100.0,
+                        height: 100.0,
                     },
-                    justify_content: None,
-                    // Some(JustifyContent::Center),
+                    justify_content: Center,
                 },
                 [ {
                     id:"leaf",
                      style: {
                         size: {
-                            width: percent(0.5),
-                            height: auto(),
+                            width: 50%",
+                            height: "*",
                         },
                     },
                 )],
@@ -76,7 +73,7 @@ async fn main() {
         )
         "#,
     );
-    println!("{:?}", node.unwrap());
+    println!("{:?}", node);
 
     return;
 

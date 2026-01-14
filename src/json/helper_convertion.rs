@@ -1,135 +1,56 @@
 use taffy::{prelude::*, GridTemplateArea, Overflow, Point, TextAlign};
 
-pub fn parse_dimension(input: &str) -> Option<Dimension> {
-    let s = input.trim();
-
-    if s == "*" {
-        return auto();
-    }
-
-    if let Some(percent_str) = s.strip_suffix('%') {
-        if let Ok(value) = percent_str.parse::<f32>() {
-            return Some(percent(value / 100.0));
-        }
-    }
-
-    if let Ok(value) = s.parse::<f32>() {
-        return Some(length(value));
-    }
-
-    None
+pub fn try_percent<T>(s: &str) -> Option<T>
+where
+    T: FromPercent,
+{
+    s.strip_suffix('%')
+        .and_then(|percent_str| percent_str.parse::<f32>().ok())
+        .map(|value| percent(value / 100.0))
 }
-
-#[derive(Default)]
-pub struct StyleNode {
-    pub display: Display,
-    pub item_is_table: bool,
-    pub item_is_replaced: bool,
-    pub box_sizing: BoxSizing,
-    pub overflow: Point<Overflow>,
-    pub scrollbar_width: f32,
-    pub position: Position,
-    pub inset: Rect<String>,
-
-    pub size: Size<String>,
-    pub min_size: Size<String>,
-    pub max_size: Size<String>,
-    pub aspect_ratio: Option<f32>,
-
-    pub margin: Rect<String>,
-    pub padding: Rect<String>,
-    pub border: Rect<String>,
-
-    pub align_items: Option<AlignItems>,
-    pub align_self: Option<AlignSelf>,
-    pub justify_items: Option<AlignItems>,
-    pub justify_self: Option<AlignSelf>,
-    pub align_content: Option<AlignContent>,
-    pub justify_content: Option<JustifyContent>,
-    pub gap: Size<String>,
-    pub text_align: TextAlign,
-
-    pub flex_direction: FlexDirection,
-    pub flex_wrap: FlexWrap,
-    pub flex_basis: String,
-    pub flex_grow: f32,
-    pub flex_shrink: f32,
-    pub grid_template_rows: Vec<String>,
-    pub grid_template_columns: Vec<String>,
-    pub grid_auto_rows: Vec<String>,
-    pub grid_auto_columns: Vec<String>,
-    pub grid_auto_flow: GridAutoFlow,
-    pub grid_template_areas: Vec<String>,
-    pub grid_template_column_names: Vec<Vec<String>>,
-    pub grid_template_row_names: Vec<Vec<String>>,
-    pub grid_row: (String, String),
-    pub grid_column: (String, String),
-}
-
-fn to_length_percent_auto(s: String) -> LengthPercentageAuto {
+pub fn to_length_percent_auto<T>(s: &str) -> T
+where
+    T: FromPercent + FromLength + TaffyAuto,
+{
     let s = s.trim();
-
-    // if s == "*" {
-    //     return auto();
-    // }
-
-    if let Some(percent_str) = s.strip_suffix('%') {
-        if let Ok(value) = percent_str.parse::<f32>() {
-            return percent(value / 100.0);
-        }
+    if let Some(value) = try_percent(s) {
+        value
+    } else if let Ok(value) = s.parse::<f32>() {
+        length(value)
+    } else {
+        auto()
     }
-
-    if let Ok(value) = s.parse::<f32>() {
-        return length(value);
-    }
-    auto()
 }
 
-fn to_length_percent(s: String) -> LengthPercentage {
+pub fn to_length_percent<T>(s: String) -> T
+where
+    T: FromPercent + FromLength,
+{
     let s = s.trim();
-
-    // if s == "*" {
-    //     return auto();
-    // }
-
-    if let Some(percent_str) = s.strip_suffix('%') {
-        if let Ok(value) = percent_str.parse::<f32>() {
-            return percent(value / 100.0);
-        }
+    if let Some(value) = try_percent(s) {
+        value
+    } else {
+        s.parse::<f32>()
+            .map(|value| length(value))
+            .unwrap_or(length(0.0))
     }
-
-    if let Ok(value) = s.parse::<f32>() {
-        return length(value);
-    }
-    length(0.0)
 }
-fn to_dimension(s: String) -> Dimension {
-    let s = s.trim();
 
-    // if s == "*" {
-    //     return auto();
-    // }
-
-    if let Some(percent_str) = s.strip_suffix('%') {
-        if let Ok(value) = percent_str.parse::<f32>() {
-            return percent(value / 100.0);
-        }
-    }
-
-    if let Ok(value) = s.parse::<f32>() {
-        return length(value);
-    }
-    auto()
-}
-fn to_rect(r: Rect<String>) -> Rect<LengthPercentageAuto> {
+pub fn to_rect<T>(r: Rect<String>) -> Rect<T>
+where
+    T: FromPercent + FromLength + TaffyAuto,
+{
     Rect {
-        left: to_length_percent_auto(r.left),
-        right: to_length_percent_auto(r.right),
-        top: to_length_percent_auto(r.top),
-        bottom: to_length_percent_auto(r.bottom),
+        left: to_length_percent_auto(&r.left),
+        right: to_length_percent_auto(&r.right),
+        top: to_length_percent_auto(&r.top),
+        bottom: to_length_percent_auto(&r.bottom),
     }
 }
-fn to_rect_lp(r: Rect<String>) -> Rect<LengthPercentage> {
+pub fn to_rect_lp<T>(r: Rect<String>) -> Rect<T>
+where
+    T: FromPercent + FromLength,
+{
     Rect {
         left: to_length_percent(r.left),
         right: to_length_percent(r.right),
@@ -137,124 +58,3 @@ fn to_rect_lp(r: Rect<String>) -> Rect<LengthPercentage> {
         bottom: to_length_percent(r.bottom),
     }
 }
-
-fn to_size(r: Size<String>) -> Size<Dimension> {
-    Size {
-        width: to_dimension(r.width),
-        height: to_dimension(r.height),
-    }
-}
-
-fn to_size_lp(r: Size<String>) -> Size<LengthPercentage> {
-    Size {
-        width: to_length_percent(r.width),
-        height: to_length_percent(r.height),
-    }
-}
-fn to_grid_template_component(s: String) -> GridTemplateComponent<String> {
-    let s = s.trim();
-
-    if let Some(percent_str) = s.strip_suffix('%') {
-        if let Ok(value) = percent_str.parse::<f32>() {
-            return percent(value / 100.0);
-        }
-    }
-
-    if let Ok(value) = s.parse::<f32>() {
-        return length(value);
-    }
-    auto()
-}
-
-// fn to_grid_placement(s: String) -> GridPlacement {
-//     GridPlacement::Line(line(0))
-// }
-
-// fn to_grid_template_area(s: String) -> GridTemplateArea<String> {
-//     let s = s.trim();
-
-//     let a = length(100.0);
-//     GridTemplateArea::
-//     // if let Some(percent_str) = s.strip_suffix('%') {
-//     //     if let Ok(value) = percent_str.parse::<f32>() {
-//     //         return percent(value / 100.0);
-//     //     }
-//     // }
-
-//     // if let Ok(value) = s.parse::<f32>() {
-//     //     return length(value);
-//     // }
-//     // length(value)
-//     // auto()
-// }
-
-fn to_grid_template_components(s: Vec<String>) -> Vec<GridTemplateComponent<String>> {
-    s.into_iter()
-        .map(|s| to_grid_template_component(s))
-        .collect()
-}
-
-impl From<StyleNode> for Style {
-    fn from(s: StyleNode) -> Self {
-        Style {
-            display: s.display,
-            item_is_table: s.item_is_table,
-            item_is_replaced: s.item_is_replaced,
-            box_sizing: s.box_sizing,
-            overflow: s.overflow,
-            scrollbar_width: s.scrollbar_width,
-            position: s.position,
-            inset: to_rect(s.inset),
-
-            size: to_size(s.size),
-            min_size: to_size(s.min_size),
-            max_size: to_size(s.max_size),
-            aspect_ratio: s.aspect_ratio,
-
-            margin: to_rect(s.margin),
-            padding: to_rect_lp(s.padding),
-            border: to_rect_lp(s.border),
-
-            align_items: s.align_items,
-            align_self: s.align_self,
-            justify_items: s.justify_items,
-            justify_self: s.justify_self,
-            align_content: s.align_content,
-            justify_content: s.justify_content,
-            gap: to_size_lp(s.gap),
-            text_align: s.text_align,
-
-            flex_direction: s.flex_direction,
-            flex_wrap: s.flex_wrap,
-            flex_basis: to_dimension(s.flex_basis),
-            flex_grow: s.flex_grow,
-            flex_shrink: s.flex_shrink,
-            grid_template_rows: to_grid_template_components(s.grid_template_rows),
-            grid_template_columns: to_grid_template_components(s.grid_template_columns),
-            // grid_auto_rows: to_grid_template_components(s.grid_template_rows),
-            // grid_auto_columns: to_grid_template_components(s.grid_template_rows),
-            grid_auto_flow: s.grid_auto_flow,
-            // grid_template_areas: to_grid_template_components(s.grid_template_areas),
-            grid_template_column_names: s.grid_template_column_names,
-            grid_template_row_names: s.grid_template_row_names,
-            // grid_row: (s.grid_row.0, s.grid_row.1),
-            // grid_column: (s.grid_column.0, s.grid_column.1),
-            ..Default::default()
-        }
-    }
-}
-
-// pub fn dimension_to_string(dim: LengthPercentageAuto) -> String {
-//     let r = dim.into_raw();
-//     if r.is_auto() {
-//         "*".to_string()
-//     }else if r.uses_percentage(){
-
-//     }
-//     match dim.into_raw() {
-//         LengthPercentageAuto::Length(v) => format!("{}", v),
-//         LengthPercentageAuto::Percent(v) => format!("{}%", v * 100.0),
-//         LengthPercentageAuto::Auto => "*".to_string(),
-//         _ => panic!("Tipo Dimension non gestito"),
-//     }
-// }

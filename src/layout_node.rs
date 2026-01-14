@@ -61,7 +61,6 @@ impl LayoutNode {
     }
 
     pub fn new(id: String, style: Style, children: Vec<Self>) -> Self {
-        helper_convertion::parse_dimension("ciao");
         Self {
             id,
             style,
