@@ -46,12 +46,8 @@ async fn main() {
             )],
         )],
     );
-    let mut taffy = TaffyTree::<()>::new();
-    let layout_node = LayoutNode::screen_root(node);
-    // .macroquad_rect(&mut taffy);
-    let root = TaffyRoot::new(layout_node).unwrap();
-    let rects = TaffyLayoutNode::new(root);
-
+    let layout_node = screen_root(node);
+    let rects = TaffyLayoutNode::new(layout_node);
     fn draw(t: &TaffyLayoutNode) {
         draw_rectangle_lines(
             t.layout.location.x + t.absolute_position.x,
@@ -68,7 +64,9 @@ async fn main() {
 
     loop {
         clear_background(WHITE);
-        draw(&rects);
+        if let Some(ref rects) = rects {
+            draw(rects);
+        }
         next_frame().await;
     }
 }

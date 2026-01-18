@@ -49,9 +49,9 @@ impl LayoutNode {
         )
     }
     pub fn debug_without_style(&self) -> String {
-        fn d(id: &str, items: &Vec<LayoutNode>) -> String {
+        fn d(id: &str, items: &[LayoutNode]) -> String {
             let items: Vec<_> = items
-                .into_iter()
+                .iter()
                 .map(|item| item.debug_without_style())
                 .collect();
             format!("id: {id}, items: {:#?}", items)
@@ -61,8 +61,8 @@ impl LayoutNode {
             LayoutNode::Node(id, _, items) => format!("Node: {}", d(id, items)),
             LayoutNode::Anonym(_, items) => format!("Node: {}", d("#", items)),
             LayoutNode::Id(id, items) => format!("Node: {}", d(id, items)),
-            LayoutNode::Leaf(id, _) => format!("Node: {}", d(id, &vec![])),
-            LayoutNode::LeafAnonym(_) => format!("Node: {}", d("#", &vec![])),
+            LayoutNode::Leaf(id, _) => format!("Node: {}", d(id, &[])),
+            LayoutNode::LeafAnonym(_) => format!("Node: {}", d("#", &[])),
         }
     }
 }

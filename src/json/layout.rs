@@ -15,7 +15,6 @@ impl LayoutJson {
         Self::create_json(s).map(|x| x.into()).unwrap_or_default()
     }
     pub fn create_json(s: &str) -> Option<Self> {
-        // let cfg: Config = json5::from_str(data).unwrap();
         match serde_json::from_str::<Self>(s) {
             Ok(l) => Some(l),
             Err(e) => {

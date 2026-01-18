@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use taffy::{prelude::*, Point};
 
-use crate::core::{TaffyNode, TaffyRoot};
+use crate::core::{LayoutNode, TaffyNode, TaffyRoot};
 
 #[derive(Clone, PartialEq, Debug)]
 pub struct TaffyLayoutNode {
@@ -23,7 +23,7 @@ impl TaffyLayoutNode {
                     Ok(layout) => Some((
                         name,
                         Self {
-                            layout: layout.clone(),
+                            layout: *layout,
                             absolute_position: position, //Self::get_pos_abs(taffy, n.node_id),
                             children: Self::to_hashmap(
                                 taffy,
@@ -41,31 +41,21 @@ impl TaffyLayoutNode {
             .collect()
     }
 
-    pub fn new(tree: TaffyRoot) -> Self {
-        Self {
-            absolute_position: Point::zero(),
-            layout: tree.taffy.layout(tree.node_id).unwrap().clone(),
-            children: Self::to_hashmap(&tree.taffy, Point::zero(), tree.children),
+    pub fn from_taffy_root(tree: TaffyRoot) -> Option<Self> {
+        match tree.taffy.layout(tree.node_id) {
+            Ok(layout) => Some(Self {
+                absolute_position: Point::zero(),
+                layout: *layout,
+                children: Self::to_hashmap(&tree.taffy, Point::zero(), tree.children),
+            }),
+            Err(e) => {
+                println!("Error TaffyLayoutNode: {}", e);
+                None
+            }
         }
     }
 
-    // fn _get_pos_abs(
-    //     taffy: &TaffyTree,
-    //     id: taffy::NodeId,
-    //     v: taffy::Point<f32>,
-    // ) -> taffy::Point<f32> {
-    //     if let Some(pid) = taffy.parent(id) {
-    //         Self::_get_pos_abs(taffy, pid, v + taffy.layout(id).unwrap().location)
-    //     } else {
-    //         v + taffy.layout(id).unwrap().location
-    //     }
-    // }
-
-    // fn get_pos_abs(taffy: &TaffyTree, id: taffy::NodeId) -> taffy::Point<f32> {
-    //     if let Some(pid) = taffy.parent(id) {
-    //         Self::_get_pos_abs(taffy, pid, taffy.layout(id).unwrap().location)
-    //     } else {
-    //         taffy.layout(id).unwrap().location
-    //     }
-    // }
+    pub fn new(layout_node: LayoutNode) -> Option<Self> {
+        TaffyRoot::new(layout_node).and_then(|n| Self::from_taffy_root(n))
+    }
 }

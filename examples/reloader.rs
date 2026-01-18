@@ -12,14 +12,20 @@ impl FileReloader {
         }
     }
 
-    /// Returns Some(new_text) if file changed since last call, otherwise None.
     pub fn update(&mut self) -> Option<String> {
-        let content_new = std::fs::read_to_string(&self.path).unwrap();
-        if self.content != content_new {
-            self.content = content_new;
-            Some(self.content.clone())
-        } else {
-            None
+        match std::fs::read_to_string(&self.path) {
+            Ok(content_new) => {
+                if self.content != content_new {
+                    self.content = content_new;
+                    Some(self.content.clone())
+                } else {
+                    None
+                }
+            }
+            Err(e) => {
+                println!("Error FileReloader: {}", e);
+                None
+            }
         }
     }
 }

@@ -57,7 +57,7 @@ impl TaffyRoot {
     pub fn new(n: LayoutNode) -> Option<Self> {
         let mut taffy = TaffyTree::new();
         let t_inner = TaffyNodeInner::new(&mut taffy, n);
-        t_inner.and_then(|t| prune_tree(t)).map(|t| Self {
+        t_inner.and_then(prune_tree).map(|t| Self {
             taffy,
             node_id: t.node_id,
             children: Self::to_hashmap(t.children),

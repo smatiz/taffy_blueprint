@@ -9,31 +9,10 @@ pub(crate) struct TaffyNodeInner {
 }
 
 impl TaffyNodeInner {
-    // TODO remove
-    fn _get_pos_abs(
-        taffy: &TaffyTree,
-        id: taffy::NodeId,
-        v: taffy::Point<f32>,
-    ) -> taffy::Point<f32> {
-        if let Some(pid) = taffy.parent(id) {
-            Self::_get_pos_abs(taffy, pid, v + taffy.layout(id).unwrap().location)
-        } else {
-            v + taffy.layout(id).unwrap().location
-        }
-    }
-    //TODO remove
-    pub(crate) fn get_pos_abs(taffy: &TaffyTree, id: taffy::NodeId) -> taffy::Point<f32> {
-        if let Some(pid) = taffy.parent(id) {
-            Self::_get_pos_abs(taffy, pid, taffy.layout(id).unwrap().location)
-        } else {
-            taffy.layout(id).unwrap().location
-        }
-    }
-
     fn _to_taffy(taffy: &mut TaffyTree, n: LayoutNode) -> Option<Self> {
         let (id, style, items) = n.get_data();
 
-        if items.len() == 0 {
+        if items.is_empty() {
             if let Some(style) = style {
                 match taffy.new_leaf(style) {
                     Ok(node_id) => Some(Self {
@@ -47,7 +26,7 @@ impl TaffyNodeInner {
                             id.as_deref().unwrap_or("#"),
                             e
                         );
-                        return None;
+                        None
                     }
                 }
             } else {
@@ -62,7 +41,7 @@ impl TaffyNodeInner {
                 style.unwrap_or(Style::default()).clone(),
                 &taffy_items
                     .iter()
-                    .map(|node| node.node_id.clone())
+                    .map(|node| node.node_id)
                     .collect::<Vec<_>>(),
             ) {
                 Ok(node_id) => Some(Self {
@@ -72,12 +51,11 @@ impl TaffyNodeInner {
                 }),
                 Err(e) => {
                     println!("Error TaffyNode: {}", e);
-                    return None;
+                    None
                 }
             }
         }
     }
-
     pub fn new(taffy: &mut TaffyTree, n: LayoutNode) -> Option<Self> {
         if let Some(taffy_root) = Self::_to_taffy(taffy, n) {
             match taffy.compute_layout(taffy_root.node_id, Size::MAX_CONTENT) {
