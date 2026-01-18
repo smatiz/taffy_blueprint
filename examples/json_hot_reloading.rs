@@ -37,6 +37,7 @@ async fn main() {
         }
 
         if let Some(ref rects) = rects {
+            
             draw(rects);
         }
         next_frame().await;

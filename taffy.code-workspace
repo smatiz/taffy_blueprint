@@ -18,7 +18,7 @@
 
 
 		"scm.diffDecorations": "all",
-		"terminal.integrated.defaultLocation": "editor",
+		"terminal.integrated.defaultLocation": "view",
 		"workbench.panel.defaultLocation": "right",
         "rust-analyzer.cargo.extraArgs": [],
         "rust-analyzer.cargo.features": [

@@ -44,17 +44,24 @@ impl LayoutNode {
     pub fn macroquad_rect(&self, taffy: &mut TaffyTree) -> TaffyRectNode {
         TaffyNode::macroquad_rect(self, taffy)
     }
-    pub fn screen_root(wrapped: Self) -> Self {
+    pub fn root(width: f32, height: f32, wrapped: Self) -> Self {
         LayoutNode::new(
-            "screen".to_string(),
+            "root".to_string(),
             Style {
                 size: Size {
-                    width: length(macroquad::window::screen_width()),
-                    height: length(macroquad::window::screen_height()),
+                    width: length(width),
+                    height: length(height),
                 },
                 ..Default::default()
             },
             vec![wrapped],
+        )
+    }
+    pub fn screen_root(wrapped: Self) -> Self {
+        Self::root(
+            macroquad::window::screen_width(),
+            macroquad::window::screen_height(),
+            wrapped,
         )
     }
 }
@@ -71,16 +78,16 @@ impl TaffyNode {
         }
     }
     fn _to_macroquad(taffy: &TaffyTree, t: TaffyNode) -> Vec<(String, Box<TaffyRectNode>)> {
-        if t.name == "" {
+        if t.id == "" {
             t.children
                 .into_iter()
                 .flat_map(|c| Self::_to_macroquad(taffy, c))
                 .collect()
         } else {
             vec![(
-                t.name,
+                t.id,
                 Box::new(TaffyRectNode::new(
-                    Self::_to_macroquad_rect(taffy, t.id),
+                    Self::_to_macroquad_rect(taffy, t.node_id),
                     t.children
                         .into_iter()
                         .flat_map(|c| Self::_to_macroquad(taffy, c))
@@ -98,10 +105,8 @@ impl TaffyNode {
             .1
     }
     pub fn macroquad_rect(n: &LayoutNode, taffy: &mut TaffyTree) -> TaffyRectNode {
-        let taffy_root = Self::_to_taffy(taffy, n);
-        taffy
-            .compute_layout(taffy_root.id, Size::MAX_CONTENT)
-            .unwrap();
-        taffy_root.to_macroquad(taffy)
+        let taffy_root = Self::new(taffy, n);
+
+        taffy_root.unwrap().to_macroquad(taffy)
     }
 }
