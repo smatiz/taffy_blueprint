@@ -1,5 +1,4 @@
 use crate::core::layout_node::LayoutNode;
-use std::collections::HashMap;
 use taffy::prelude::*;
 
 #[derive(Clone, PartialEq, Debug)]
@@ -10,6 +9,7 @@ pub(crate) struct TaffyNodeInner {
 }
 
 impl TaffyNodeInner {
+    // TODO remove
     fn _get_pos_abs(
         taffy: &TaffyTree,
         id: taffy::NodeId,
@@ -21,6 +21,7 @@ impl TaffyNodeInner {
             v + taffy.layout(id).unwrap().location
         }
     }
+    //TODO remove
     pub(crate) fn get_pos_abs(taffy: &TaffyTree, id: taffy::NodeId) -> taffy::Point<f32> {
         if let Some(pid) = taffy.parent(id) {
             Self::_get_pos_abs(taffy, pid, taffy.layout(id).unwrap().location)

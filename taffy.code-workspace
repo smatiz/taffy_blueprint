@@ -4,6 +4,11 @@
 			"path": "."
 		}
 	],
+	 "launch": {
+		"version": "0.2.0",
+		"configurations": [],
+		"compounds": []
+	 },
 	 "settings": { 
 /////////////////////////////////////////////////
 // "rust-analyzer.checkOnSave": true,
@@ -16,10 +21,12 @@
 // "rust-analyzer.completion.postfix.enable": true,
 ///////////////////////////////////////////////
 "editor.codeLens": true,
-
+"editor.minimap.enabled": false,
+"terminal.integrated.defaultLocation": "view",
+"workbench.panel.defaultLocation": "right",
+"workbench.panel.showLabels": false,
 		"scm.diffDecorations": "all",
-		"terminal.integrated.defaultLocation": "view",
-		"workbench.panel.defaultLocation": "right",
+		// "terminal.integrated.defaultLocation": "view",
         "rust-analyzer.cargo.extraArgs": [],
         "rust-analyzer.cargo.features": [
 			"use_macroquad",

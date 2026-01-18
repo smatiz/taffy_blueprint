@@ -4,6 +4,26 @@ use taffy::prelude::*;
 
 use std::collections::HashMap;
 
+// #[derive(Clone, Debug)]
+// pub struct TaffyRectNodeXXX {
+//     node: TaffyNode,
+// }
+// impl TaffyRectNodeXXX {
+//     pub fn get_child(&self, tr: &TaffyRoot, s: &str) -> Option<&TaffyRectNodeXXX> {
+//         // tr.children.get(s).map(|x| tr.)
+//         // self.children.get(s).map(|x| &**x)
+
+//         None
+//     }
+
+//     // pub fn get_all_children(&self) -> &HashMap<String, Box<TaffyRectNode>> {
+//     //     &self.children
+//     // }
+//     // pub fn rect(&self) -> &Rect {
+//     //     &self.rect
+//     // }
+// }
+
 #[derive(Clone, Debug)]
 pub struct TaffyRectNode {
     rect: Rect,
@@ -70,6 +90,7 @@ impl TaffyNodeInner {
     fn _to_macroquad_rect(taffy: &TaffyTree, id: NodeId) -> macroquad::math::Rect {
         let location = Self::get_pos_abs(taffy, id);
         let layout = taffy.layout(id).unwrap();
+        println!("_to_macroquad_rect {location:?} --- {:?}", layout.location);
         macroquad::math::Rect {
             x: location.x,
             y: location.y,

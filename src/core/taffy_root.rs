@@ -1,11 +1,11 @@
 use crate::core::{layout_node::LayoutNode, tree_prune::*, TaffyNodeInner};
-use std::{collections::HashMap, f64::NAN};
+use std::collections::HashMap;
 use taffy::prelude::*;
 
 #[derive(Clone, PartialEq, Debug)]
-pub(crate) struct TaffyNode {
-    pub(crate) node_id: NodeId,
-    pub(crate) children: HashMap<String, TaffyNode>,
+pub struct TaffyNode {
+    pub node_id: NodeId,
+    pub children: HashMap<String, TaffyNode>,
 }
 
 impl Prune for TaffyNodeInner {
@@ -29,10 +29,10 @@ impl Prune for TaffyNodeInner {
     }
 }
 #[derive(Clone, Debug)]
-pub(crate) struct TaffyRoot {
-    pub(crate) taffy: TaffyTree,
-    pub(crate) node_id: NodeId,
-    pub(crate) children: HashMap<String, TaffyNode>,
+pub struct TaffyRoot {
+    pub taffy: TaffyTree,
+    pub node_id: NodeId,
+    pub children: HashMap<String, TaffyNode>,
 }
 impl TaffyRoot {
     fn to_hashmap(children: Vec<TaffyNodeInner>) -> HashMap<String, TaffyNode> {

@@ -47,11 +47,21 @@ async fn main() {
         )],
     );
     let mut taffy = TaffyTree::<()>::new();
-    let rects = LayoutNode::screen_root(node).macroquad_rect(&mut taffy);
+    let layout_node = LayoutNode::screen_root(node);
+    // .macroquad_rect(&mut taffy);
+    let root = TaffyRoot::new(layout_node).unwrap();
+    let rects = TaffyLayoutNode::new(root);
 
-    fn draw(t: &TaffyRectNode) {
-        draw_rectangle_lines(t.rect().x, t.rect().y, t.rect().w, t.rect().h, 2.0, BLACK);
-        for (_, rect) in t.get_all_children().iter() {
+    fn draw(t: &TaffyLayoutNode) {
+        draw_rectangle_lines(
+            t.layout.location.x + t.absolute_position.x,
+            t.layout.location.y + t.absolute_position.y,
+            t.layout.size.width,
+            t.layout.size.height,
+            2.0,
+            BLACK,
+        );
+        for (_, rect) in t.children.iter() {
             draw(rect);
         }
     }
@@ -62,45 +72,3 @@ async fn main() {
         next_frame().await;
     }
 }
-
-// fn main() -> Result<(), taffy::TaffyError> {
-//     let mut taffy: TaffyTree<()> = TaffyTree::new();
-
-//     let child = taffy.new_leaf(Style {
-//         size: Size {
-//             width: Dimension::from_percent(0.5),
-//             height: Dimension::AUTO,
-//         },
-//         ..Default::default()
-//     })?;
-
-//     let node = taffy.new_with_children(
-//         Style {
-//             size: Size {
-//                 width: Dimension::from_length(100.0),
-//                 height: Dimension::from_length(100.0),
-//             },
-//             justify_content: Some(JustifyContent::Center),
-//             ..Default::default()
-//         },
-//         &[child],
-//     )?;
-
-//     println!("Compute layout with 100x100 viewport:");
-//     taffy.compute_layout(
-//         node,
-//         Size {
-//             height: AvailableSpace::Definite(100.0),
-//             width: AvailableSpace::Definite(100.0),
-//         },
-//     )?;
-//     println!("node: {:#?}", taffy.layout(node)?);
-//     println!("child: {:#?}", taffy.layout(child)?);
-
-//     println!("Compute layout with undefined (infinite) viewport:");
-//     taffy.compute_layout(node, Size::MAX_CONTENT)?;
-//     println!("node: {:#?}", taffy.layout(node)?);
-//     println!("child: {:#?}", taffy.layout(child)?);
-
-//     Ok(())
-// }
