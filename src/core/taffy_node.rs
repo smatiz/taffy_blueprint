@@ -16,11 +16,11 @@ impl Prune for TaffyNodeInner {
         self.id.is_some()
     }
 
-    fn children(&self) -> &[Self] {
-        &self.children
+    fn children(&mut self) -> Vec<Self> {
+        self.children.drain(0..self.children.len()).collect()
     }
 
-    fn make_output(n: &Self, children: Vec<Self::Output>) -> Self::Output {
+    fn make_output(n: Self, children: Vec<Self::Output>) -> Self::Output {
         Self::Output {
             id: n.id,
             node_id: n.node_id,
@@ -28,17 +28,39 @@ impl Prune for TaffyNodeInner {
         }
     }
 }
-#[derive(Clone, Default, Debug)]
+#[derive(Clone, Debug)]
 pub(crate) struct TaffyRoot {
     pub(crate) taffy: TaffyTree,
-    pub(crate) node_id: Option<NodeId>,
+    pub(crate) node_id: NodeId,
     pub(crate) children: HashMap<String, TaffyNode>,
 }
 impl TaffyRoot {
-    // pub fn new(n: LayoutNode) -> Self {
-    //     let taffy = TaffyTree::new();
-    //     let t_inner = TaffyNodeInner::new(&mut taffy, n);
+    fn to_hashmap(children: Vec<TaffyNodeInner>) -> HashMap<String, TaffyNode> {
+        children
+            .into_iter()
+            .filter_map(|c| {
+                if let Some(id) = c.id {
+                    Some((
+                        id,
+                        TaffyNode {
+                            node_id: c.node_id,
+                            children: Self::to_hashmap(c.children),
+                        },
+                    ))
+                } else {
+                    None
+                }
+            })
+            .collect()
+    }
 
-    //     Self {}
-    // }
+    pub fn new(n: LayoutNode) -> Option<Self> {
+        let mut taffy = TaffyTree::new();
+        let t_inner = TaffyNodeInner::new(&mut taffy, n);
+        t_inner.and_then(|t| prune_tree(t)).map(|t| Self {
+            taffy,
+            node_id: t.node_id,
+            children: Self::to_hashmap(t.children),
+        })
+    }
 }

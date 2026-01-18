@@ -14,7 +14,7 @@ fn conf() -> Conf {
 
 #[macroquad::main(conf)]
 async fn main() {
-    let node = LayoutNodeOld::single_anonym(
+    let node = LayoutNode::Anonym(
         Style {
             size: Size {
                 width: percent(1.0),
@@ -24,7 +24,7 @@ async fn main() {
             align_items: Some(AlignItems::Center),
             ..Default::default()
         },
-        LayoutNodeOld::new(
+        vec![LayoutNode::Node(
             "root".to_string(),
             Style {
                 size: Size {
@@ -34,7 +34,7 @@ async fn main() {
                 justify_content: Some(JustifyContent::Center),
                 ..Default::default()
             },
-            vec![LayoutNodeOld::leaf(
+            vec![LayoutNode::Leaf(
                 "leaf".to_string(),
                 Style {
                     size: Size {
@@ -44,10 +44,10 @@ async fn main() {
                     ..Default::default()
                 },
             )],
-        ),
+        )],
     );
     let mut taffy = TaffyTree::<()>::new();
-    let rects = LayoutNodeOld::screen_root(node).macroquad_rect(&mut taffy);
+    let rects = LayoutNode::screen_root(node).macroquad_rect(&mut taffy);
 
     fn draw(t: &TaffyRectNode) {
         draw_rectangle_lines(t.rect().x, t.rect().y, t.rect().w, t.rect().h, 2.0, BLACK);

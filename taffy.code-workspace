@@ -108,7 +108,7 @@
 			"command": "cargo run --example json_hot_reloading --features use_json --features use_macroquad"
 		    },
 		    "windows": {
-			"command": "cargo run --example json_hot_reloading --features use_json --features use_macroquad"
+			"command": "cargo run --example basic --features use_json --features use_macroquad"
 
 		    },
 		    "args": [],

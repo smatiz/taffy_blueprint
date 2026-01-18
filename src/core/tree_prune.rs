@@ -6,24 +6,25 @@ where
     type Output;
 
     fn keep(&self) -> bool;
-    fn children(&self) -> &[Self];
-    fn make_output(id: &Self, children: Vec<Self::Output>) -> Self::Output;
+    fn children(&mut self) -> Vec<Self>;
+    fn make_output(node: Self, children: Vec<Self::Output>) -> Self::Output;
 }
 
-fn _prune_tree<N: Prune>(node: &N) -> Vec<N::Output> {
+fn _prune_tree<N: Prune>(mut node: N) -> Vec<N::Output> {
+    let keep = node.keep();
     let converted_children: Vec<N::Output> = node
         .children()
-        .iter()
+        .into_iter()
         .flat_map(|c| _prune_tree(c))
         .collect();
-    if node.keep() {
+    if keep {
         vec![N::make_output(node, converted_children)]
     } else {
         converted_children
     }
 }
 
-pub fn prune_tree<N>(root: &N) -> Option<N::Output>
+pub fn prune_tree<N>(root: N) -> Option<N::Output>
 where
     N: Prune,
 {
@@ -54,13 +55,13 @@ mod tests {
             self.id.is_some()
         }
 
-        fn children(&self) -> &[Self] {
-            &self.children
+        fn children(&mut self) -> Vec<Self> {
+            self.children.drain(0..self.children.len()).collect()
         }
 
-        fn make_output(n: &Self, children: Vec<Self::Output>) -> Self::Output {
+        fn make_output(n: Self, children: Vec<Self::Output>) -> Self::Output {
             Self::Output {
-                id: n.id.clone().unwrap(),
+                id: n.id.unwrap(),
                 children,
             }
         }
@@ -76,7 +77,7 @@ mod tests {
     #[test]
     fn test_prune() {
         assert_eq!(
-            prune_tree(&A {
+            prune_tree(A {
                 id: None,
                 children: vec![],
             }),
@@ -84,7 +85,7 @@ mod tests {
         );
 
         assert_eq!(
-            prune_tree(&A {
+            prune_tree(A {
                 id: Some("1".to_string()),
                 children: vec![],
             }),
@@ -95,7 +96,7 @@ mod tests {
         );
 
         assert_eq!(
-            prune_tree(&A {
+            prune_tree(A {
                 id: Some("ROOT".to_string()),
                 children: vec![A {
                     id: None,
@@ -121,7 +122,7 @@ mod tests {
         );
 
         assert_eq!(
-            prune_tree(&A {
+            prune_tree(A {
                 id: Some("ROOT".to_string()),
                 children: vec![A {
                     id: None,
