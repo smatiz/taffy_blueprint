@@ -15,7 +15,7 @@
 // "rust-analyzer.completion.callable.snippets": "fill_arguments",
 // "rust-analyzer.completion.postfix.enable": true,
 ///////////////////////////////////////////////
-
+"editor.codeLens": true,
 
 		"scm.diffDecorations": "all",
 		"terminal.integrated.defaultLocation": "view",

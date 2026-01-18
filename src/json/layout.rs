@@ -1,4 +1,4 @@
-use crate::{json::style::StyleJson, prelude::LayoutNode};
+use crate::{core::LayoutNode, json::style::StyleJson};
 use serde::{Deserialize, Serialize};
 
 #[derive(Default, Debug, Clone, Deserialize, Serialize)]
@@ -28,10 +28,10 @@ impl LayoutJson {
 
 impl From<LayoutJson> for LayoutNode {
     fn from(value: LayoutJson) -> Self {
-        Self {
-            id: value.id,
-            style: value.style.into(),
-            children: value.children.into_iter().map(|c| c.into()).collect(),
-        }
+        LayoutNode::Node(
+            value.id,
+            value.style.into(),
+            value.children.into_iter().map(|c| c.into()).collect(),
+        )
     }
 }

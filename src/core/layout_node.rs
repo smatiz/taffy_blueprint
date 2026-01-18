@@ -1,53 +1,32 @@
 use super::*;
-use crate::core::h_taffy::style_auto;
 use serde::{Deserialize, Serialize};
 use taffy::prelude::*;
 
 #[derive(Default, Debug, Clone, Deserialize, Serialize)]
-pub struct LayoutNode {
-    pub(crate) style: Style,
-    pub(crate) id: String,
-    pub(crate) children: Vec<Self>,
+pub enum LayoutNode {
+    #[default]
+    Empty,
+    Node(String, Style, Vec<Self>),
+    Anonym(Style, Vec<Self>),
+    Id(String, Vec<Self>),
+    Leaf(String, Style),
+    LeafAnonym(Style),
 }
 
 impl LayoutNode {
-    // pub fn root_size(&self) -> taffy::Size<f32> {
-    //     TaffyNode::root_size(self)
-    // }
-
-    pub fn new(id: String, style: Style, children: Vec<Self>) -> Self {
-        Self {
-            id,
-            style,
-            children,
+    pub(crate) fn get_data(self) -> (Option<String>, Option<Style>, Vec<Self>) {
+        match self {
+            LayoutNode::Empty => (None, None, vec![]),
+            LayoutNode::Node(id, style, items) => (Some(id), Some(style), items),
+            LayoutNode::Anonym(style, items) => (None, Some(style), items),
+            LayoutNode::Id(id, items) => (Some(id), None, items),
+            LayoutNode::Leaf(id, style) => (Some(id), Some(style), vec![]),
+            LayoutNode::LeafAnonym(style) => (None, Some(style), vec![]),
         }
     }
 
-    pub fn empty() -> Self {
-        Self::new("".to_string(), h_taffy::style_auto(), vec![])
-    }
-    pub fn single(id: String, style: Style, child: Self) -> Self {
-        Self::new(id, style, vec![child])
-    }
-
-    /// This is a node used normally to give a name to an anonym Node
-    pub fn named(id: String, child: Self) -> Self {
-        Self::new(id, style_auto(), vec![child])
-    }
-
-    // pub fn or_empty(item: Option<Self>) -> Self {
-    //     item.unwrap_or(Self::empty())
-    // }
-
-    pub fn single_anonym(style: Style, child: Self) -> Self {
-        Self::single("".to_string(), style, child)
-    }
-    pub fn anonym(style: Style, children: Vec<Self>) -> Self {
-        Self::new("".to_string(), style, children)
-    }
-
     pub fn fork(children: Vec<Self>) -> Self {
-        LayoutNode::anonym(
+        LayoutNode::Anonym(
             Style {
                 display: Display::Grid,
                 grid_template_columns: vec![percent(1.0)],
@@ -57,46 +36,33 @@ impl LayoutNode {
             children
                 .into_iter()
                 .map(|child| {
-                    Self::single_anonym(
+                    Self::Anonym(
                         Style {
                             grid_row: line(1),
                             grid_column: line(1),
                             ..h_taffy::style_full()
                         },
-                        child,
+                        vec![child],
                     )
                 })
                 .collect(),
         )
     }
-
-    pub fn leaf(id: String, style: Style) -> Self {
-        Self {
-            id,
-            style,
-            children: vec![],
+    pub fn debug_without_style(&self) -> String {
+        fn d(id: &str, items: &Vec<LayoutNode>) -> String {
+            let items: Vec<_> = items
+                .into_iter()
+                .map(|item| item.debug_without_style())
+                .collect();
+            format!("id: {id}, items: {:#?}", items)
+        }
+        match self {
+            LayoutNode::Empty => "Empty".to_string(),
+            LayoutNode::Node(id, _, items) => format!("Node: {}", d(id, items)),
+            LayoutNode::Anonym(_, items) => format!("Node: {}", d("#", items)),
+            LayoutNode::Id(id, items) => format!("Node: {}", d(id, items)),
+            LayoutNode::Leaf(id, _) => format!("Node: {}", d(id, &vec![])),
+            LayoutNode::LeafAnonym(_) => format!("Node: {}", d("#", &vec![])),
         }
     }
-    // pub fn leaf_anonym(style: Style) -> Self {
-    //     Self::anonym(style, vec![])
-    // }
-
-    // pub fn dimension(width: Dimension, height: Dimension) -> Self {
-    //     Self {
-    //         style: Style {
-    //             size: Size { width, height },
-    //             ..Default::default()
-    //         },
-    //         ..Default::default()
-    //     }
-    // }
-    // pub fn grow(grow: f32) -> Self {
-    //     Self {
-    //         style: Style {
-    //             flex_grow: grow,
-    //             ..Default::default()
-    //         },
-    //         ..Default::default()
-    //     }
-    // }
 }

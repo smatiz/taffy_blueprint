@@ -42,10 +42,10 @@ impl TaffyRectNode {
 }
 impl LayoutNode {
     pub fn macroquad_rect(&self, taffy: &mut TaffyTree) -> TaffyRectNode {
-        TaffyNode::macroquad_rect(self, taffy)
+        TaffyNodeInner::macroquad_rect(self, taffy)
     }
     pub fn root(width: f32, height: f32, wrapped: Self) -> Self {
-        LayoutNode::new(
+        LayoutNode::Node(
             "root".to_string(),
             Style {
                 size: Size {
@@ -66,7 +66,7 @@ impl LayoutNode {
     }
 }
 
-impl TaffyNode {
+impl TaffyNodeInner {
     fn _to_macroquad_rect(taffy: &TaffyTree, id: NodeId) -> macroquad::math::Rect {
         let location = Self::get_pos_abs(taffy, id);
         let layout = taffy.layout(id).unwrap();
@@ -77,15 +77,10 @@ impl TaffyNode {
             h: layout.size.height,
         }
     }
-    fn _to_macroquad(taffy: &TaffyTree, t: TaffyNode) -> Vec<(String, Box<TaffyRectNode>)> {
-        if t.id == "" {
-            t.children
-                .into_iter()
-                .flat_map(|c| Self::_to_macroquad(taffy, c))
-                .collect()
-        } else {
+    fn _to_macroquad(taffy: &TaffyTree, t: TaffyNodeInner) -> Vec<(String, Box<TaffyRectNode>)> {
+        if let Some(id) = t.id {
             vec![(
-                t.id,
+                id,
                 Box::new(TaffyRectNode::new(
                     Self::_to_macroquad_rect(taffy, t.node_id),
                     t.children
@@ -94,6 +89,11 @@ impl TaffyNode {
                         .collect(),
                 )),
             )]
+        } else {
+            t.children
+                .into_iter()
+                .flat_map(|c| Self::_to_macroquad(taffy, c))
+                .collect()
         }
     }
 
@@ -105,7 +105,7 @@ impl TaffyNode {
             .1
     }
     pub fn macroquad_rect(n: &LayoutNode, taffy: &mut TaffyTree) -> TaffyRectNode {
-        let taffy_root = Self::new(taffy, n);
+        let taffy_root = Self::new(taffy, n.clone());
 
         taffy_root.unwrap().to_macroquad(taffy)
     }
