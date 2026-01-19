@@ -1,172 +1,52 @@
-use crate::core::layout_node::LayoutNode;
-use taffy::prelude::*;
+use taffy::{prelude::*, Point};
+
+use crate::core::{
+    tree_prune::{prune_tree, Prune},
+    TaffyNodeRaw,
+};
+
+impl Prune for TaffyNodeInner {
+    fn keep(&self) -> bool {
+        self.id.is_some()
+    }
+
+    fn children(&mut self) -> Vec<Self> {
+        self.children.drain(0..self.children.len()).collect()
+    }
+
+    fn replace_children(self, children: Vec<Self>) -> Self {
+        Self { children, ..self }
+    }
+}
 
 #[derive(Clone, PartialEq, Debug)]
 pub(crate) struct TaffyNodeInner {
-    pub(crate) node_id: NodeId,
-    pub(crate) id: Option<String>,
-    pub(crate) children: Vec<Self>,
+    pub absolute_position: Point<f32>,
+    pub layout: Layout,
+    pub id: Option<String>,
+    pub children: Vec<Self>,
 }
 
 impl TaffyNodeInner {
-    fn _to_taffy(taffy: &mut TaffyTree, n: LayoutNode) -> Option<Self> {
-        let (id, style, items) = n.get_data();
-
-        if items.is_empty() {
-            if let Some(style) = style {
-                match taffy.new_leaf(style) {
-                    Ok(node_id) => Some(Self {
-                        id,
-                        node_id,
-                        children: vec![],
-                    }),
-                    Err(e) => {
-                        println!(
-                            "Error TaffyNode (id:{}): {}",
-                            id.as_deref().unwrap_or("#"),
-                            e
-                        );
-                        None
-                    }
-                }
-            } else {
+    fn _new(taffy: &TaffyTree, position: Point<f32>, t: TaffyNodeRaw) -> Option<Self> {
+        match taffy.layout(t.node_id) {
+            Ok(layout) => Some(Self {
+                layout: *layout,
+                absolute_position: position,
+                id: t.id,
+                children: t
+                    .children
+                    .into_iter()
+                    .filter_map(|c| Self::_new(taffy, position + layout.location, c))
+                    .collect(),
+            }),
+            Err(e) => {
+                println!("Error TaffyNode: {}", e);
                 None
             }
-        } else {
-            let taffy_items = items
-                .into_iter()
-                .filter_map(|child| Self::_to_taffy(taffy, child))
-                .collect::<Vec<_>>();
-            match taffy.new_with_children(
-                style.unwrap_or(Style::default()).clone(),
-                &taffy_items
-                    .iter()
-                    .map(|node| node.node_id)
-                    .collect::<Vec<_>>(),
-            ) {
-                Ok(node_id) => Some(Self {
-                    id,
-                    node_id,
-                    children: taffy_items,
-                }),
-                Err(e) => {
-                    println!("Error TaffyNode: {}", e);
-                    None
-                }
-            }
         }
     }
-    pub fn new(taffy: &mut TaffyTree, n: LayoutNode) -> Option<Self> {
-        if let Some(taffy_root) = Self::_to_taffy(taffy, n) {
-            match taffy.compute_layout(taffy_root.node_id, Size::MAX_CONTENT) {
-                Ok(_) => Some(taffy_root),
-                Err(e) => {
-                    println!("Error TaffyNode: {}", e);
-                    None
-                }
-            }
-        } else {
-            None
-        }
-    }
-}
-
-#[cfg(test)]
-mod tests {
-
-    #[derive(Debug)]
-    struct TaffyNodeTest(TaffyNodeInner);
-
-    // I need to ignore the nodeid field
-    impl PartialEq for TaffyNodeTest {
-        fn eq(&self, other: &Self) -> bool {
-            self.0.id == other.0.id
-                && self.0.children.len() == other.0.children.len()
-                && self
-                    .0
-                    .children
-                    .iter()
-                    .zip(other.0.children.clone())
-                    .all(|(x, y)| TaffyNodeTest(x.clone()) == TaffyNodeTest(y))
-        }
-    }
-
-    use crate::core::layout_node::LayoutNode::*;
-
-    use super::*;
-    #[test]
-    fn test_anonym() {
-        let mut taffy = TaffyTree::new();
-        assert_eq!(
-            TaffyNodeTest(
-                TaffyNodeInner::new(
-                    &mut taffy,
-                    Anonym(
-                        Style::default(),
-                        vec![Node("two".to_string(), Style::default(), vec![])],
-                    )
-                )
-                .unwrap()
-            ),
-            TaffyNodeTest(TaffyNodeInner {
-                id: None,
-                node_id: NodeId::new(0),
-                children: vec![TaffyNodeInner {
-                    id: Some("two".to_string()),
-                    node_id: NodeId::new(0),
-                    children: vec![],
-                }],
-            }),
-        );
-
-        assert_eq!(
-            TaffyNodeTest(
-                TaffyNodeInner::new(
-                    &mut taffy,
-                    Node(
-                        "one".to_string(),
-                        Style::default(),
-                        vec![
-                            Node(
-                                "two".to_string(),
-                                Style::default(),
-                                vec![
-                                    Id("three".to_string(), vec![Empty]),
-                                    LeafAnonym(Style::default()),
-                                    Leaf("four".to_string(), Style::default())
-                                ]
-                            ),
-                            Empty
-                        ],
-                    )
-                )
-                .unwrap()
-            ),
-            TaffyNodeTest(TaffyNodeInner {
-                id: Some("one".to_string()),
-                node_id: NodeId::new(0),
-                children: vec![TaffyNodeInner {
-                    id: Some("two".to_string()),
-                    node_id: NodeId::new(0),
-                    children: vec![
-                        TaffyNodeInner {
-                            id: Some("three".to_string()),
-                            node_id: NodeId::new(0),
-                            children: vec![],
-                        },
-                        TaffyNodeInner {
-                            id: None,
-                            node_id: NodeId::new(0),
-                            children: vec![],
-                        },
-                        TaffyNodeInner {
-                            id: Some("four".to_string()),
-                            node_id: NodeId::new(0),
-                            children: vec![],
-                        }
-                    ],
-                },],
-            }),
-        );
+    pub fn new(taffy: &TaffyTree, t: TaffyNodeRaw) -> Option<Self> {
+        Self::_new(taffy, Point::zero(), t).and_then(prune_tree)
     }
 }

@@ -46,9 +46,10 @@ async fn main() {
             )],
         )],
     );
-    let layout_node = screen_root(node);
-    let rects = TaffyLayoutNode::new(layout_node);
-    fn draw(t: &TaffyLayoutNode) {
+    let n = LayoutNode::screen_root(node);
+    let rects = TaffyNode::from_layout_node(n);
+
+    fn draw(t: &TaffyNode) {
         draw_rectangle_lines(
             t.layout.location.x + t.absolute_position.x,
             t.layout.location.y + t.absolute_position.y,

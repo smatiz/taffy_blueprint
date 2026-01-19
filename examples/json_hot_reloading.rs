@@ -1,5 +1,6 @@
 mod reloader;
 use macroquad::prelude::*;
+use taffy::TaffyTree;
 use taffy_blueprint::prelude::*;
 
 fn conf() -> Conf {
@@ -15,7 +16,7 @@ fn conf() -> Conf {
 async fn main() {
     let mut reloader = reloader::FileReloader::new("config.json");
 
-    fn draw(t: &TaffyLayoutNode) {
+    fn draw(t: &TaffyNode) {
         draw_rectangle_lines(
             t.layout.location.x + t.absolute_position.x,
             t.layout.location.y + t.absolute_position.y,
@@ -35,7 +36,8 @@ async fn main() {
         if let Some(contents) = reloader.update() {
             println!("contents {}", contents);
             let layout_node = LayoutJson::create_node(&contents);
-            rects = TaffyLayoutNode::new(screen_root(layout_node));
+            let n = LayoutNode::screen_root(layout_node);
+            rects = TaffyNode::from_layout_node(n);
         }
 
         if let Some(ref rects) = rects {

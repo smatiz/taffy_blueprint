@@ -6,8 +6,19 @@
 	],
 	 "launch": {
 		"version": "0.2.0",
-		"configurations": [],
-		"compounds": []
+		"configurations": [
+			{
+				"name": "Debug Rust (MSVC)",
+				"type": "cppvsdbg",
+				"request": "launch",
+				"program": "${workspaceFolder}\\target\\debug\\examples\\basic.exe",
+				"args": [],
+				"cwd": "${workspaceFolder}",
+				"environment": [],
+				// "console": "integratedTerminal"
+				"console": "externalTerminal"
+			}
+		]
 	 },
 	 "settings": { 
 /////////////////////////////////////////////////
@@ -20,7 +31,15 @@
 // "rust-analyzer.completion.callable.snippets": "fill_arguments",
 // "rust-analyzer.completion.postfix.enable": true,
 ///////////////////////////////////////////////
+// "editor.inlayHints.enabled": "off",
 "editor.codeLens": true,
+"rust-analyzer.lens.references.enable": false,
+"rust-analyzer.lens.implementations.enable": false,
+"rust-analyzer.lens.run.enable": true,
+"rust-analyzer.lens.debug.enable": true,
+// "rust-analyzer.lens.enumVariantReferences.enable": false,
+
+"editor.codeActionWidget.showHeaders": false,
 "editor.minimap.enabled": false,
 "terminal.integrated.defaultLocation": "view",
 "workbench.panel.defaultLocation": "right",
@@ -89,10 +108,10 @@
 		    "label": "build",
 		    "type": "shell",
 		    "linux": {
-			"command": "cargo build --features 'debug'"
+				"command": "cargo build --features 'debug'"
 		    },
 		    "windows": {
-			"command": "cargo build  --features use_json --features use_macroquad"
+				"command": "cargo build  --features use_json --features use_macroquad"
 		    },
 		    "args": [],
 		    "group": "build",

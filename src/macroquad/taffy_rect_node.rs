@@ -1,7 +1,7 @@
 use macroquad::math::Rect;
 use std::{collections::HashMap, fmt::Debug};
 
-use crate::core::TaffyLayoutNode;
+use crate::core::TaffyNode;
 
 #[derive(Clone, Debug)]
 pub struct TaffyRectNode {
@@ -9,7 +9,7 @@ pub struct TaffyRectNode {
     children: HashMap<String, TaffyRectNode>,
 }
 impl TaffyRectNode {
-    fn _rect(t: &TaffyLayoutNode) -> Rect {
+    fn _rect(t: &TaffyNode) -> Rect {
         Rect {
             x: t.layout.location.x + t.absolute_position.x,
             y: t.layout.location.y + t.absolute_position.y,
@@ -18,7 +18,7 @@ impl TaffyRectNode {
         }
     }
 
-    fn _children(children: HashMap<String, TaffyLayoutNode>) -> HashMap<String, Self> {
+    fn _children(children: HashMap<String, TaffyNode>) -> HashMap<String, Self> {
         children
             .into_iter()
             .map(|c| {
@@ -33,7 +33,7 @@ impl TaffyRectNode {
             .collect()
     }
 
-    pub fn new(t: TaffyLayoutNode) -> Self {
+    pub fn new(t: TaffyNode) -> Self {
         Self {
             rect: Self::_rect(&t),
             children: Self::_children(t.children),

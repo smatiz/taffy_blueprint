@@ -25,15 +25,13 @@ impl LayoutNode {
             wrapped,
         )
     }
-
-    pub fn macroquad_rect(&self) -> TaffyRectNode {
-        let n = TaffyLayoutNode::new(self.clone());
-        // TODO remove unwrap
-        TaffyRectNode::new(n.unwrap())
-        // let taffy_root = _to_taffy(taffy, n);
-        // taffy
-        //     .compute_layout(taffy_root.id, Size::MAX_CONTENT)
-        //     .unwrap();
-        // taffy_root.to_macroquad(taffy)
+    pub fn grow(grow: f32) -> Self {
+        Self::LeafAnonym(Style {
+            flex_grow: grow,
+            ..Default::default()
+        })
+    }
+    pub fn macroquad_rect(&self) -> Option<TaffyRectNode> {
+        TaffyNode::from_layout_node(self.clone()).map(|n| TaffyRectNode::new(n))
     }
 }
