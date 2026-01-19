@@ -2,3 +2,4 @@
 
 * export to svg
 * json: how to fork?
+* add /tests
