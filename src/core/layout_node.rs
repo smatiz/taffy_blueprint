@@ -70,4 +70,27 @@ impl LayoutNode {
             LayoutNode::LeafAnonym(_) => format!("Node: {}", d("#", &[])),
         }
     }
+
+    fn _compute(taffy: &mut TaffyTree, n: Self) -> NodeId {
+        let (_, style, children) = n.get_data();
+        if children.len() == 0 {
+            taffy
+                .new_leaf(style.unwrap_or(h_taffy::style_auto()))
+                .unwrap()
+        } else {
+            let ids = children
+                .into_iter()
+                .map(|child| Self::_compute(taffy, child))
+                .collect::<Vec<_>>();
+            taffy
+                .new_with_children(style.unwrap_or(h_taffy::style_auto()), &ids)
+                .unwrap()
+        }
+    }
+    pub fn to_taffy_tree(self) -> (TaffyTree, NodeId) {
+        let mut taffy = TaffyTree::new();
+        let root_id = Self::_compute(&mut taffy, self);
+        taffy.compute_layout(root_id, Size::MAX_CONTENT).unwrap();
+        (taffy, root_id)
+    }
 }

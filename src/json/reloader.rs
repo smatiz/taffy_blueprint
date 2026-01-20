@@ -1,10 +1,10 @@
-pub struct FileReloader {
+pub struct BasicFileHotReloader {
     path: String,
     content: String,
 }
 
-impl FileReloader {
-    pub fn new(path: &str) -> FileReloader {
+impl BasicFileHotReloader {
+    pub fn new(path: &str) -> BasicFileHotReloader {
         let path = path.to_string();
         Self {
             path,

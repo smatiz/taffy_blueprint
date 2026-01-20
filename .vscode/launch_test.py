@@ -2,9 +2,9 @@
 import json5
 import os
 import sys
-import task_lib
+import task_lib 
 
-root_path = os.path.dirname(os.path.abspath(__file__))
+root_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 print(root_path)
 # Load the JSON file
 with open(os.path.join(root_path, "taffy.code-workspace"), "r", encoding="utf-8") as f:

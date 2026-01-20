@@ -92,10 +92,6 @@ pub struct StyleJson {
 fn to_dimension(s: String) -> Dimension {
     let s = s.trim();
 
-    // if s == "*" {
-    //     return auto();
-    // }
-
     if let Some(percent_str) = s.strip_suffix('%') {
         if let Ok(value) = percent_str.parse::<f32>() {
             return percent(value / 100.0);
@@ -136,28 +132,6 @@ fn to_grid_template_component(s: String) -> GridTemplateComponent<String> {
     auto()
 }
 
-// fn to_grid_placement(s: String) -> GridPlacement {
-//     GridPlacement::Line(line(0))
-// }
-
-// fn to_grid_template_area(s: String) -> GridTemplateArea<String> {
-//     let s = s.trim();
-
-//     let a = length(100.0);
-//     GridTemplateArea::
-//     // if let Some(percent_str) = s.strip_suffix('%') {
-//     //     if let Ok(value) = percent_str.parse::<f32>() {
-//     //         return percent(value / 100.0);
-//     //     }
-//     // }
-
-//     // if let Ok(value) = s.parse::<f32>() {
-//     //     return length(value);
-//     // }
-//     // length(value)
-//     // auto()
-// }
-
 fn to_grid_template_components(s: Vec<String>) -> Vec<GridTemplateComponent<String>> {
     s.into_iter()
         .map(|s| to_grid_template_component(s))
@@ -166,7 +140,6 @@ fn to_grid_template_components(s: Vec<String>) -> Vec<GridTemplateComponent<Stri
 
 impl From<StyleJson> for Style {
     fn from(s: StyleJson) -> Self {
-        println!("s.justify_content {:?}", s.justify_content);
         Style {
             display: s.display,
             item_is_table: s.item_is_table,
@@ -202,12 +175,13 @@ impl From<StyleJson> for Style {
             flex_shrink: s.flex_shrink,
             grid_template_rows: to_grid_template_components(s.grid_template_rows),
             grid_template_columns: to_grid_template_components(s.grid_template_columns),
-            // grid_auto_rows: to_grid_template_components(s.grid_template_rows),
-            // grid_auto_columns: to_grid_template_components(s.grid_template_rows),
             grid_auto_flow: s.grid_auto_flow,
-            // grid_template_areas: to_grid_template_components(s.grid_template_areas),
             grid_template_column_names: s.grid_template_column_names,
             grid_template_row_names: s.grid_template_row_names,
+            // TODO
+            // grid_auto_rows: to_grid_template_components(s.grid_template_rows),
+            // grid_auto_columns: to_grid_template_components(s.grid_template_rows),
+            // grid_template_areas: to_grid_template_components(s.grid_template_areas),
             // grid_row: (s.grid_row.0, s.grid_row.1),
             // grid_column: (s.grid_column.0, s.grid_column.1),
             ..Default::default()

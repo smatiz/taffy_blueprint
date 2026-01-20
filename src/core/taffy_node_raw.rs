@@ -1,4 +1,4 @@
-use crate::core::{h_taffy, layout_node::LayoutNode};
+use crate::core::layout_node::LayoutNode;
 use taffy::prelude::*;
 
 #[derive(Clone, PartialEq, Debug)]
@@ -81,29 +81,6 @@ impl TaffyRootRaw {
         let mut taffy = TaffyTree::new();
         TaffyNodeRaw::new(&mut taffy, n).map(|root| Self { taffy, root })
     }
-    fn _compute(taffy: &mut TaffyTree, n: LayoutNode) -> NodeId {
-        let (_, style, children) = n.get_data();
-        if children.len() == 0 {
-            taffy
-                .new_leaf(style.unwrap_or(h_taffy::style_auto()))
-                .unwrap()
-        } else {
-            let ids = children
-                .into_iter()
-                .map(|child| Self::_compute(taffy, child))
-                .collect::<Vec<_>>();
-            taffy
-                .new_with_children(style.unwrap_or(h_taffy::style_auto()), &ids)
-                .unwrap()
-        }
-    }
-    pub fn size(n: LayoutNode) -> taffy::Size<f32> {
-        let mut taffy = TaffyTree::new();
-        let root_id = Self::_compute(&mut taffy, n);
-        taffy.compute_layout(root_id, Size::MAX_CONTENT).unwrap();
-        let layout = taffy.layout(root_id).unwrap();
-        layout.size
-    }
 }
 
 #[cfg(test)]
@@ -112,7 +89,6 @@ mod tests {
     #[derive(Debug)]
     struct TaffyNodeTest(TaffyNodeRaw);
 
-    // I need to ignore the nodeid field
     impl PartialEq for TaffyNodeTest {
         fn eq(&self, other: &Self) -> bool {
             self.0.id == other.0.id

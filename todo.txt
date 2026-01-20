@@ -3,3 +3,7 @@
 * export to svg
 * json: how to fork?
 * add /tests
+* more examples (see also from theatris)
+
+* documentation
+ layout_node => taffy_node_raw => (taffy_node_inner) => taffy_node

@@ -29,13 +29,3 @@ pub fn style_full() -> Style {
         ..Default::default()
     }
 }
-
-// pub trait TextSize {
-//     fn measure(&self, text: &str) -> (f32, f32);
-// }
-
-// TODO implement this in taffy_blueprint and test the use!
-// pub fn get_text_style(td: impl TextSize, text: &str) -> Style {
-//     let r = td.measure(text);
-//     h_taffy::style_dimension(r.0, r.1)
-// }
