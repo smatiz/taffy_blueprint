@@ -26,5 +26,5 @@ for entry in data.get("folders", []):
     task_lib.run_cargo("test", full_path, 
                   use_mod=True, no_warning = True, 
                   backtrace = False, target_dir ="target/_test", 
-                  release=False, features=["for_test"] )
+                  release=False, features=["use_json", "use_macroquad"] )
 

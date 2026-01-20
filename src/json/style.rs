@@ -133,9 +133,7 @@ fn to_grid_template_component(s: String) -> GridTemplateComponent<String> {
 }
 
 fn to_grid_template_components(s: Vec<String>) -> Vec<GridTemplateComponent<String>> {
-    s.into_iter()
-        .map(|s| to_grid_template_component(s))
-        .collect()
+    s.into_iter().map(to_grid_template_component).collect()
 }
 
 impl From<StyleJson> for Style {

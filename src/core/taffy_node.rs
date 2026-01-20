@@ -34,6 +34,6 @@ impl TaffyNode {
     }
 
     pub fn from_layout_node(n: LayoutNode) -> Option<Self> {
-        TaffyRootRaw::new(n).and_then(|n| TaffyNode::new(n))
+        TaffyRootRaw::new(n).and_then(TaffyNode::new)
     }
 }

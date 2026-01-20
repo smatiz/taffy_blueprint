@@ -16,6 +16,6 @@ impl LayoutNode {
         )
     }
     pub fn macroquad_rect(&self) -> Option<TaffyRectNode> {
-        TaffyNode::from_layout_node(self.clone()).map(|n| TaffyRectNode::new(n))
+        TaffyNode::from_layout_node(self.clone()).map(TaffyRectNode::new)
     }
 }

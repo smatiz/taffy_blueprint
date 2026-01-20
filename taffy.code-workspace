@@ -33,7 +33,7 @@
 		///////////////////////////////////////////////
 		// "editor.inlayHints.enabled": "off",
 		"editor.codeLens": true,
-		"rust-analyzer.lens.references.enable": false,
+		// "rust-analyzer.lens.references.enable": false,
 		"rust-analyzer.lens.implementations.enable": false,
 		"rust-analyzer.lens.run.enable": true,
 		"rust-analyzer.lens.debug.enable": true,
@@ -93,8 +93,8 @@
 				"id": "buildMode",
 				"type": "pickString",
 				"options": [
-					"'release' --release",
-					"'debug' "
+					"--release",
+					""
 				],
 				"default": "",
 				"description": "build mode"
@@ -105,7 +105,7 @@
 				"label": "build",
 				"type": "shell",
 				"linux": {
-					"command": "cargo build --features 'debug'"
+					"command": "cargo build --features use_json --features use_macroquad"
 				},
 				"windows": {
 					"command": "cargo build  --features use_json --features use_macroquad"
@@ -151,10 +151,10 @@
 				"label": "run +",
 				"type": "shell",
 				"linux": {
-					"command": "RUST_BACKTRACE='full' cargo run  --features 'debug'"
+					"command": "RUST_BACKTRACE='full' cargo run  --features use_json --features use_macroquad"
 				},
 				"windows": {
-					"command": "$env:RUST_BACKTRACE='full';cargo run  --features 'debug'"
+					"command": "$env:RUST_BACKTRACE='full';cargo run  --features use_json --features use_macroquad"
 				},
 				"args": [],
 				"group": "build",
@@ -197,10 +197,10 @@
 				"label": "check",
 				"type": "shell",
 				"linux": {
-					"command": "cargo check --target-dir target/_check2 --features ${input:buildMode}"
+					"command": "cargo check ${input:buildMode} --target-dir target/_check2 --features use_json --features use_macroquad"
 				},
 				"windows": {
-					"command": "cargo check --target-dir target/_check2 --features ${input:buildMode}"
+					"command": "cargo check ${input:buildMode} --target-dir target/_check2 --features use_json --features use_macroquad"
 				},
 				"args": [],
 				"group": "build",
@@ -221,10 +221,10 @@
 				"label": "clippy",
 				"type": "shell",
 				"linux": {
-					"command": "cargo clippy  --features ${input:buildMode}"
+					"command": "cargo clippy  ${input:buildMode} --features use_json --features use_macroquad"
 				},
 				"windows": {
-					"command": "cargo clippy  --features ${input:buildMode}"
+					"command": "cargo clippy  ${input:buildMode} --features use_json --features use_macroquad"
 				},
 				"args": [],
 				"group": "build",

@@ -12,6 +12,8 @@ pub enum LayoutNode {
     Leaf(String, Style),
     LeafAnonym(Style),
 }
+
+#[allow(clippy::from_over_into)]
 impl Into<Vec<Self>> for LayoutNode {
     fn into(self) -> Vec<Self> {
         vec![self]
@@ -53,7 +55,8 @@ impl LayoutNode {
                 .collect(),
         )
     }
-    pub fn debug_without_style(&self) -> String {
+    #[allow(unused)]
+    pub(crate) fn debug_without_style(&self) -> String {
         fn d(id: &str, items: &[LayoutNode]) -> String {
             let items: Vec<_> = items
                 .iter()
@@ -73,7 +76,7 @@ impl LayoutNode {
 
     fn _compute(taffy: &mut TaffyTree, n: Self) -> NodeId {
         let (_, style, children) = n.get_data();
-        if children.len() == 0 {
+        if children.is_empty() {
             taffy
                 .new_leaf(style.unwrap_or(h_taffy::style_auto()))
                 .unwrap()

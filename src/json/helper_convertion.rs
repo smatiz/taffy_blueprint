@@ -17,7 +17,7 @@ where
         value
     } else if let Ok(value) = s.parse::<f32>() {
         length(value)
-    } else if s == "" {
+    } else if s.is_empty() {
         length(0.0)
     } else {
         auto()
