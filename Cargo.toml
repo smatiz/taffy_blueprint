@@ -8,15 +8,10 @@ rust-version = "1.65"
 description = "A blueprint on top of a flexible UI layout library Taffy"
 # repository = "https://github.com/stephane.matiz/taffy_blueprint"
 keywords = [
-    "blueprint",
+    "taffy",
     "macroquad",
     "hot-reload",
-    "taffy",
-    "cross-platform",
-    "layout",
-    "flexbox",
-    "css-grid",
-    "grid",
+	"declarative"
 ]
 categories = ["gui"]
 license = "MIT"
