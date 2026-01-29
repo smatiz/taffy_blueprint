@@ -1,4 +1,4 @@
-use crate::core::layout_node::LayoutNode;
+use crate::core::layout::Node;
 use taffy::prelude::*;
 
 #[derive(Clone, PartialEq, Debug)]
@@ -14,7 +14,7 @@ pub struct TaffyRootRaw {
 }
 
 impl TaffyNodeRaw {
-    fn _to_taffy(taffy: &mut TaffyTree, n: LayoutNode) -> Option<Self> {
+    fn _to_taffy(taffy: &mut TaffyTree, n: Node) -> Option<Self> {
         let (id, style, items) = n.get_data();
 
         if items.is_empty() {
@@ -61,7 +61,7 @@ impl TaffyNodeRaw {
             }
         }
     }
-    fn new(taffy: &mut TaffyTree, n: LayoutNode) -> Option<Self> {
+    fn new(taffy: &mut TaffyTree, n: Node) -> Option<Self> {
         if let Some(taffy_root) = Self::_to_taffy(taffy, n) {
             match taffy.compute_layout(taffy_root.node_id, Size::MAX_CONTENT) {
                 Ok(_) => Some(taffy_root),
@@ -77,7 +77,7 @@ impl TaffyNodeRaw {
 }
 
 impl TaffyRootRaw {
-    pub fn new(n: LayoutNode) -> Option<Self> {
+    pub fn new(n: Node) -> Option<Self> {
         let mut taffy = TaffyTree::new();
         TaffyNodeRaw::new(&mut taffy, n).map(|root| Self { taffy, root })
     }
@@ -102,7 +102,7 @@ mod tests {
         }
     }
 
-    use crate::core::layout_node::LayoutNode::*;
+    use crate::core::layout::Node::*;
 
     use super::*;
     #[test]
@@ -114,7 +114,7 @@ mod tests {
                     &mut taffy,
                     Anonym(
                         Style::default(),
-                        vec![Node("two".to_string(), Style::default(), vec![])],
+                        vec![Layout("two".to_string(), Style::default(), vec![])],
                     )
                 )
                 .unwrap()
@@ -134,11 +134,11 @@ mod tests {
             TaffyNodeTest(
                 TaffyNodeRaw::new(
                     &mut taffy,
-                    Node(
+                    Layout(
                         "one".to_string(),
                         Style::default(),
                         vec![
-                            Node(
+                            Layout(
                                 "two".to_string(),
                                 Style::default(),
                                 vec![

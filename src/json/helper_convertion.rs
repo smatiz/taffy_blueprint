@@ -1,5 +1,5 @@
+use regex::Regex;
 use taffy::prelude::*;
-
 pub fn try_percent<T>(s: &str) -> Option<T>
 where
     T: FromPercent,
@@ -24,7 +24,7 @@ where
     }
 }
 
-pub fn to_length_percent<T>(s: String) -> T
+pub fn to_length_percent<T>(s: &str) -> T
 where
     T: FromPercent + FromLength,
 {
@@ -37,26 +37,36 @@ where
             .unwrap_or(length(0.0))
     }
 }
+pub fn to_rect(r: &str) -> Rect<LengthPercentageAuto> {
+    let re = Regex::new(r"(?<left>\w) (?<top>\w) (?<right>\w) (?<bottom>\w)").unwrap();
 
-pub fn to_rect<T>(r: Rect<String>) -> Rect<T>
-where
-    T: FromPercent + FromLength + TaffyAuto,
-{
-    Rect {
-        left: to_length_percent_auto(&r.left),
-        right: to_length_percent_auto(&r.right),
-        top: to_length_percent_auto(&r.top),
-        bottom: to_length_percent_auto(&r.bottom),
+    if let Some(caps) = re.captures(&r) {
+        Rect {
+            left: to_length_percent_auto(&caps["left"]),
+            right: to_length_percent_auto(&caps["right"]),
+            top: to_length_percent_auto(&caps["top"]),
+            bottom: to_length_percent_auto(&caps["bottom"]),
+        }
+    } else {
+        Rect::auto()
     }
 }
-pub fn to_rect_lp<T>(r: Rect<String>) -> Rect<T>
-where
-    T: FromPercent + FromLength,
-{
-    Rect {
-        left: to_length_percent(r.left),
-        right: to_length_percent(r.right),
-        top: to_length_percent(r.top),
-        bottom: to_length_percent(r.bottom),
+
+pub fn to_rect_lp(r: &str) -> Rect<LengthPercentage> {
+    let re = Regex::new(r"(?<left>\w) (?<top>\w) (?<right>\w) (?<bottom>\w)").unwrap();
+    if let Some(caps) = re.captures(&r) {
+        Rect {
+            left: to_length_percent(&caps["left"]),
+            right: to_length_percent(&caps["right"]),
+            top: to_length_percent(&caps["top"]),
+            bottom: to_length_percent(&caps["bottom"]),
+        }
+    } else {
+        Rect {
+            left: LengthPercentage::ZERO,
+            right: LengthPercentage::ZERO,
+            top: LengthPercentage::ZERO,
+            bottom: LengthPercentage::ZERO,
+        }
     }
 }

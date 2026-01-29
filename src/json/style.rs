@@ -1,3 +1,4 @@
+use regex::Regex;
 use serde::{Deserialize, Serialize};
 use taffy::{prelude::*, Overflow, Point, TextAlign};
 
@@ -22,23 +23,23 @@ pub struct StyleJson {
     #[serde(default)]
     pub position: Position,
     #[serde(default)]
-    pub inset: Rect<String>,
+    pub inset: String,
 
     #[serde(default)]
-    pub size: Size<String>,
+    pub size: String,
     #[serde(default)]
-    pub min_size: Size<String>,
+    pub min_size: String,
     #[serde(default)]
-    pub max_size: Size<String>,
+    pub max_size: String,
     #[serde(default)]
     pub aspect_ratio: Option<f32>,
 
     #[serde(default)]
-    pub margin: Rect<String>,
+    pub margin: String,
     #[serde(default)]
-    pub padding: Rect<String>,
+    pub padding: String,
     #[serde(default)]
-    pub border: Rect<String>,
+    pub border: String,
 
     #[serde(default)]
     pub align_items: Option<AlignItems>,
@@ -53,7 +54,7 @@ pub struct StyleJson {
     #[serde(default)]
     pub justify_content: Option<JustifyContent>,
     #[serde(default)]
-    pub gap: Size<String>,
+    pub gap: String,
     #[serde(default)]
     pub text_align: TextAlign,
 
@@ -89,7 +90,7 @@ pub struct StyleJson {
     pub grid_column: (String, String),
 }
 
-fn to_dimension(s: String) -> Dimension {
+fn to_dimension(s: &str) -> Dimension {
     let s = s.trim();
 
     if let Some(percent_str) = s.strip_suffix('%') {
@@ -104,35 +105,50 @@ fn to_dimension(s: String) -> Dimension {
     auto()
 }
 
-fn to_size(r: Size<String>) -> Size<Dimension> {
-    Size {
-        width: to_dimension(r.width),
-        height: to_dimension(r.height),
+fn to_size(r: &str) -> Size<Dimension> {
+    let re = Regex::new(r"(?<w>[^ ]+) (?<h>[^ ]+)").unwrap();
+    if let Some(caps) = re.captures(&r) {
+        // let w = caps["w"].to_string();
+        // let h = caps["h"].to_string();
+        Size {
+            width: to_dimension(&caps["w"]),
+            height: to_dimension(&caps["h"]),
+        }
+    } else {
+        Size::auto()
     }
 }
 
-fn to_size_lp(r: Size<String>) -> Size<LengthPercentage> {
-    Size {
-        width: helper_convertion::to_length_percent(r.width),
-        height: helper_convertion::to_length_percent(r.height),
-    }
-}
-fn to_grid_template_component(s: String) -> GridTemplateComponent<String> {
-    let s = s.trim();
-
-    if let Some(percent_str) = s.strip_suffix('%') {
-        if let Ok(value) = percent_str.parse::<f32>() {
-            return percent(value / 100.0);
+fn to_size_lp(r: &str) -> Size<LengthPercentage> {
+    let re = Regex::new(r"(?<w>[^ ]+) (?<h>[^ ]+)").unwrap();
+    if let Some(caps) = re.captures(&r) {
+        Size {
+            width: helper_convertion::to_length_percent(&caps["w"]),
+            height: helper_convertion::to_length_percent(&caps["h"]),
+        }
+    } else {
+        Size {
+            width: LengthPercentage::ZERO,
+            height: LengthPercentage::ZERO,
         }
     }
-
-    if let Ok(value) = s.parse::<f32>() {
-        return length(value);
-    }
-    auto()
 }
 
 fn to_grid_template_components(s: Vec<String>) -> Vec<GridTemplateComponent<String>> {
+    fn to_grid_template_component(s: String) -> GridTemplateComponent<String> {
+        let s = s.trim();
+
+        if let Some(percent_str) = s.strip_suffix('%') {
+            if let Ok(value) = percent_str.parse::<f32>() {
+                return percent(value / 100.0);
+            }
+        }
+
+        if let Ok(value) = s.parse::<f32>() {
+            return length(value);
+        }
+        auto()
+    }
     s.into_iter().map(to_grid_template_component).collect()
 }
 
@@ -146,16 +162,16 @@ impl From<StyleJson> for Style {
             overflow: s.overflow,
             scrollbar_width: s.scrollbar_width,
             position: s.position,
-            inset: helper_convertion::to_rect(s.inset),
+            inset: helper_convertion::to_rect(&s.inset),
 
-            size: to_size(s.size),
-            min_size: to_size(s.min_size),
-            max_size: to_size(s.max_size),
+            size: to_size(&s.size),
+            min_size: to_size(&s.min_size),
+            max_size: to_size(&s.max_size),
             aspect_ratio: s.aspect_ratio,
 
-            margin: helper_convertion::to_rect(s.margin),
-            padding: helper_convertion::to_rect_lp(s.padding),
-            border: helper_convertion::to_rect_lp(s.border),
+            margin: helper_convertion::to_rect(&s.margin),
+            padding: helper_convertion::to_rect_lp(&s.padding),
+            border: helper_convertion::to_rect_lp(&s.border),
 
             align_items: s.align_items,
             align_self: s.align_self,
@@ -163,12 +179,12 @@ impl From<StyleJson> for Style {
             justify_self: s.justify_self,
             align_content: s.align_content,
             justify_content: s.justify_content,
-            gap: to_size_lp(s.gap),
+            gap: to_size_lp(&s.gap),
             text_align: s.text_align,
 
             flex_direction: s.flex_direction,
             flex_wrap: s.flex_wrap,
-            flex_basis: to_dimension(s.flex_basis),
+            flex_basis: to_dimension(&s.flex_basis),
             flex_grow: s.flex_grow,
             flex_shrink: s.flex_shrink,
             grid_template_rows: to_grid_template_components(s.grid_template_rows),

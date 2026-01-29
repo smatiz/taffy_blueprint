@@ -32,8 +32,8 @@ async fn main() {
         clear_background(WHITE);
 
         if let Some(contents) = reloader.update() {
-            let layout_node = LayoutJson::create_node(&contents);
-            let n = LayoutNode::screen_root(layout_node);
+            let layout_node = NodeJson::create_node(&contents);
+            let n = Node::screen_root(layout_node);
             rects = TaffyNode::from_layout_node(n);
         }
 

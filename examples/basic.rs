@@ -14,7 +14,7 @@ fn conf() -> Conf {
 
 #[macroquad::main(conf)]
 async fn main() {
-    let node = LayoutNode::Anonym(
+    let node = Node::Anonym(
         Style {
             size: Size {
                 width: percent(1.0),
@@ -24,7 +24,7 @@ async fn main() {
             align_items: Some(AlignItems::Center),
             ..Default::default()
         },
-        vec![LayoutNode::Node(
+        vec![Node::Layout(
             "root".to_string(),
             Style {
                 size: Size {
@@ -34,7 +34,7 @@ async fn main() {
                 justify_content: Some(JustifyContent::Center),
                 ..Default::default()
             },
-            vec![LayoutNode::Leaf(
+            vec![Node::Leaf(
                 "leaf".to_string(),
                 Style {
                     size: Size {
@@ -46,7 +46,7 @@ async fn main() {
             )],
         )],
     );
-    let n = LayoutNode::screen_root(node);
+    let n = Node::screen_root(node);
     let rects = TaffyNode::from_layout_node(n);
 
     fn draw(t: &TaffyNode) {

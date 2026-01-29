@@ -1,11 +1,11 @@
-use crate::core::{taffy_node_inner::TaffyNodeInner, LayoutNode, TaffyRootRaw};
+use crate::core::{taffy_node_inner::TaffyNodeInner, Node, TaffyRootRaw};
 use std::collections::HashMap;
 use taffy::{prelude::*, Point};
 
 #[derive(Clone, PartialEq, Debug)]
 pub struct TaffyNode {
     pub absolute_position: Point<f32>,
-    pub layout: Layout,
+    pub layout: taffy::Layout,
     pub children: HashMap<String, Self>,
 }
 impl TaffyNode {
@@ -33,7 +33,7 @@ impl TaffyNode {
         })
     }
 
-    pub fn from_layout_node(n: LayoutNode) -> Option<Self> {
+    pub fn from_layout_node(n: Node) -> Option<Self> {
         TaffyRootRaw::new(n).and_then(TaffyNode::new)
     }
 }

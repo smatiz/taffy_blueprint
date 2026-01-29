@@ -2,7 +2,7 @@ use taffy::prelude::*;
 use taffy_blueprint::prelude::*;
 
 fn main() {
-    let root = LayoutNode::Node(
+    let root = Node::Layout(
         "root".to_string(),
         Style {
             flex_direction: FlexDirection::Column,
@@ -13,7 +13,7 @@ fn main() {
             ..Default::default()
         },
         vec![
-            LayoutNode::Leaf(
+            Node::Leaf(
                 "header_node".to_string(),
                 Style {
                     size: Size {
@@ -23,7 +23,7 @@ fn main() {
                     ..Default::default()
                 },
             ),
-            LayoutNode::Leaf(
+            Node::Leaf(
                 "body_node".to_string(),
                 Style {
                     size: Size {

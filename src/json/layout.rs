@@ -1,8 +1,8 @@
-use crate::{core::LayoutNode, json::style::StyleJson};
+use crate::{core::Node, json::style::StyleJson};
 use serde::{Deserialize, Serialize};
 
 #[derive(Default, Debug, Clone, Deserialize, Serialize)]
-pub struct LayoutJson {
+pub struct NodeJson {
     #[serde(default)]
     pub(crate) style: StyleJson,
     #[serde(default)]
@@ -10,8 +10,8 @@ pub struct LayoutJson {
     #[serde(default)]
     pub(crate) children: Vec<Self>,
 }
-impl LayoutJson {
-    pub fn create_node(s: &str) -> LayoutNode {
+impl NodeJson {
+    pub fn create_node(s: &str) -> Node {
         Self::create_json(s).map(|x| x.into()).unwrap_or_default()
     }
     pub fn create_json(s: &str) -> Option<Self> {
@@ -25,9 +25,9 @@ impl LayoutJson {
     }
 }
 
-impl From<LayoutJson> for LayoutNode {
-    fn from(value: LayoutJson) -> Self {
-        LayoutNode::Node(
+impl From<NodeJson> for Node {
+    fn from(value: NodeJson) -> Self {
+        Node::Layout(
             value.id,
             value.style.into(),
             value.children.into_iter().map(|c| c.into()).collect(),

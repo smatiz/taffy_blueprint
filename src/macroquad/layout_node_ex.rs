@@ -1,9 +1,9 @@
 use crate::prelude::*;
 use taffy::prelude::*;
 
-impl LayoutNode {
-    pub fn screen_root(wrapped: LayoutNode) -> LayoutNode {
-        LayoutNode::Node(
+impl Node {
+    pub fn screen_root(wrapped: Node) -> Node {
+        Self::Layout(
             "root".to_string(),
             Style {
                 size: Size {
