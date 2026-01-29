@@ -37,7 +37,7 @@ where
             .unwrap_or(length(0.0))
     }
 }
-pub fn to_rect(r: &str) -> Rect<LengthPercentageAuto> {
+pub fn to_rect(r: &str, default: Rect<LengthPercentageAuto>) -> Rect<LengthPercentageAuto> {
     let re = Regex::new(r"(?<left>\w) (?<top>\w) (?<right>\w) (?<bottom>\w)").unwrap();
 
     if let Some(caps) = re.captures(&r) {
@@ -48,7 +48,7 @@ pub fn to_rect(r: &str) -> Rect<LengthPercentageAuto> {
             bottom: to_length_percent_auto(&caps["bottom"]),
         }
     } else {
-        Rect::auto()
+        default
     }
 }
 
@@ -62,11 +62,6 @@ pub fn to_rect_lp(r: &str) -> Rect<LengthPercentage> {
             bottom: to_length_percent(&caps["bottom"]),
         }
     } else {
-        Rect {
-            left: LengthPercentage::ZERO,
-            right: LengthPercentage::ZERO,
-            top: LengthPercentage::ZERO,
-            bottom: LengthPercentage::ZERO,
-        }
+        Rect::zero()
     }
 }

@@ -33,7 +33,7 @@ use_json = ["serde_json", "regex"]
 
 [dev-dependencies]
 macroquad = "0.4.14"
-serde_json = "1.0.149"
+serde_jsonrc = "0.1.0"
 notify = "8.2.0"
 
 # # Enable default features for tests and examples

@@ -43,3 +43,36 @@ async fn main() {
         next_frame().await;
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use taffy::prelude::*;
+
+    use super::*;
+    #[test]
+    fn test_() {
+        let lj = NodeJson::create_node(
+            r#"
+                {
+                    "id": "a",
+                    "style": {
+                        "size": "123.4 234.5"
+                    },
+                    "children":[]
+                }
+        "#,
+        );
+        let l = Node::Layout(
+            "a".into(),
+            Style {
+                size: Size {
+                    width: length(123.4),
+                    height: length(234.5),
+                },
+                ..Default::default()
+            },
+            vec![],
+        );
+        assert_eq!(lj, l);
+    }
+}

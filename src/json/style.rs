@@ -162,14 +162,14 @@ impl From<StyleJson> for Style {
             overflow: s.overflow,
             scrollbar_width: s.scrollbar_width,
             position: s.position,
-            inset: helper_convertion::to_rect(&s.inset),
+            inset: helper_convertion::to_rect(&s.inset, Rect::auto()),
 
             size: to_size(&s.size),
             min_size: to_size(&s.min_size),
             max_size: to_size(&s.max_size),
             aspect_ratio: s.aspect_ratio,
 
-            margin: helper_convertion::to_rect(&s.margin),
+            margin: helper_convertion::to_rect(&s.margin, Rect::zero()),
             padding: helper_convertion::to_rect_lp(&s.padding),
             border: helper_convertion::to_rect_lp(&s.border),
 
