@@ -17,7 +17,7 @@ serde = { version = "1.0.228", features = ["derive"] }
 macroquad = { version = "0.4.14", optional = true }
 serde_json = { version = "1.0.149", optional = true }
 regex = { version = "1.12.2", optional = true }
-
+once_cell =  { version ="1.21.3", optional = true }
 # [package.metadata.docs.rs]
 # # To test all the documentation related features, run:
 # # RUSTDOCFLAGS="--cfg docsrs" cargo +nightly doc -Zunstable-options -Zrustdoc-scrape-examples --all-features --no-deps --open
@@ -29,7 +29,7 @@ regex = { version = "1.12.2", optional = true }
 
 [features]
 use_macroquad = ["macroquad"]
-use_json = ["serde_json", "regex"]
+use_json = ["serde_json", "regex", "once_cell"]
 
 [dev-dependencies]
 macroquad = "0.4.14"

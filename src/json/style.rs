@@ -1,11 +1,10 @@
-use regex::Regex;
+use std::marker::PhantomData;
+
 use serde::{Deserialize, Serialize};
 use taffy::{prelude::*, Overflow, Point, TextAlign};
 
-use crate::json::helper_convertion;
-fn default_one() -> f32 {
-    1.0
-}
+use crate::json::helper_convertion::*;
+
 #[derive(Default, Debug, Clone, Deserialize, Serialize)]
 pub struct StyleJson {
     #[serde(default)]
@@ -85,71 +84,9 @@ pub struct StyleJson {
     #[serde(default)]
     pub grid_template_row_names: Vec<Vec<String>>,
     #[serde(default)]
-    pub grid_row: (String, String),
+    pub grid_row: String,
     #[serde(default)]
-    pub grid_column: (String, String),
-}
-
-fn to_dimension(s: &str) -> Dimension {
-    let s = s.trim();
-
-    if let Some(percent_str) = s.strip_suffix('%') {
-        if let Ok(value) = percent_str.parse::<f32>() {
-            return percent(value / 100.0);
-        }
-    }
-
-    if let Ok(value) = s.parse::<f32>() {
-        return length(value);
-    }
-    auto()
-}
-
-fn to_size(r: &str) -> Size<Dimension> {
-    let re = Regex::new(r"(?<w>[^ ]+) (?<h>[^ ]+)").unwrap();
-    if let Some(caps) = re.captures(&r) {
-        // let w = caps["w"].to_string();
-        // let h = caps["h"].to_string();
-        Size {
-            width: to_dimension(&caps["w"]),
-            height: to_dimension(&caps["h"]),
-        }
-    } else {
-        Size::auto()
-    }
-}
-
-fn to_size_lp(r: &str) -> Size<LengthPercentage> {
-    let re = Regex::new(r"(?<w>[^ ]+) (?<h>[^ ]+)").unwrap();
-    if let Some(caps) = re.captures(&r) {
-        Size {
-            width: helper_convertion::to_length_percent(&caps["w"]),
-            height: helper_convertion::to_length_percent(&caps["h"]),
-        }
-    } else {
-        Size {
-            width: LengthPercentage::ZERO,
-            height: LengthPercentage::ZERO,
-        }
-    }
-}
-
-fn to_grid_template_components(s: Vec<String>) -> Vec<GridTemplateComponent<String>> {
-    fn to_grid_template_component(s: String) -> GridTemplateComponent<String> {
-        let s = s.trim();
-
-        if let Some(percent_str) = s.strip_suffix('%') {
-            if let Ok(value) = percent_str.parse::<f32>() {
-                return percent(value / 100.0);
-            }
-        }
-
-        if let Ok(value) = s.parse::<f32>() {
-            return length(value);
-        }
-        auto()
-    }
-    s.into_iter().map(to_grid_template_component).collect()
+    pub grid_column: String,
 }
 
 impl From<StyleJson> for Style {
@@ -162,16 +99,16 @@ impl From<StyleJson> for Style {
             overflow: s.overflow,
             scrollbar_width: s.scrollbar_width,
             position: s.position,
-            inset: helper_convertion::to_rect(&s.inset, Rect::auto()),
+            inset: to_rect(&s.inset, Rect::auto()),
 
             size: to_size(&s.size),
             min_size: to_size(&s.min_size),
             max_size: to_size(&s.max_size),
             aspect_ratio: s.aspect_ratio,
 
-            margin: helper_convertion::to_rect(&s.margin, Rect::zero()),
-            padding: helper_convertion::to_rect_lp(&s.padding),
-            border: helper_convertion::to_rect_lp(&s.border),
+            margin: to_rect(&s.margin, Rect::zero()),
+            padding: to_rect_lp(&s.padding),
+            border: to_rect_lp(&s.border),
 
             align_items: s.align_items,
             align_self: s.align_self,
@@ -187,18 +124,30 @@ impl From<StyleJson> for Style {
             flex_basis: to_dimension(&s.flex_basis),
             flex_grow: s.flex_grow,
             flex_shrink: s.flex_shrink,
-            grid_template_rows: to_grid_template_components(s.grid_template_rows),
-            grid_template_columns: to_grid_template_components(s.grid_template_columns),
+            grid_template_rows: s
+                .grid_template_rows
+                .into_iter()
+                .map(to_grid_template_component)
+                .collect(),
+            grid_template_columns: s
+                .grid_template_columns
+                .into_iter()
+                .map(to_grid_template_component)
+                .collect(),
             grid_auto_flow: s.grid_auto_flow,
             grid_template_column_names: s.grid_template_column_names,
             grid_template_row_names: s.grid_template_row_names,
-            // TODO
-            // grid_auto_rows: to_grid_template_components(s.grid_template_rows),
-            // grid_auto_columns: to_grid_template_components(s.grid_template_rows),
-            // grid_template_areas: to_grid_template_components(s.grid_template_areas),
-            // grid_row: (s.grid_row.0, s.grid_row.1),
-            // grid_column: (s.grid_column.0, s.grid_column.1),
-            ..Default::default()
+            grid_auto_rows: s.grid_auto_rows.into_iter().map(to_min_max).collect(),
+            grid_auto_columns: s.grid_auto_columns.into_iter().map(to_min_max).collect(),
+
+            grid_row: to_line(&s.grid_row),
+            grid_column: to_line(&s.grid_column),
+            grid_template_areas: s
+                .grid_template_areas
+                .into_iter()
+                .map(to_grid_template_areas)
+                .collect(),
+            dummy: PhantomData::default(),
         }
     }
 }
