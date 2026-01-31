@@ -18,6 +18,7 @@ macroquad = { version = "0.4.14", optional = true }
 serde_json = { version = "1.0.149", optional = true }
 regex = { version = "1.12.2", optional = true }
 once_cell =  { version ="1.21.3", optional = true }
+# derivative = "2.2.0"
 # [package.metadata.docs.rs]
 # # To test all the documentation related features, run:
 # # RUSTDOCFLAGS="--cfg docsrs" cargo +nightly doc -Zunstable-options -Zrustdoc-scrape-examples --all-features --no-deps --open

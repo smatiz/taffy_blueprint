@@ -1,39 +1,47 @@
+use crate::{core::TaffyBlueprintError, json::NodeJsonError};
+
+pub enum PruneResult {
+    Replace,
+    Keep,
+    Undefined,
+}
+
 pub trait Prune
 where
     Self: Sized,
 {
-    fn keep(&self) -> bool;
+    fn keep(&self) -> PruneResult;
     fn children(&mut self) -> Vec<Self>;
     fn replace_children(self, children: Vec<Self>) -> Self;
 }
-
-fn _prune_tree<N: Prune>(mut node: N) -> Vec<N> {
-    let keep = node.keep();
-    let converted_children: Vec<N> = node
-        .children()
+fn converted_children<N: Prune>(node: &mut N) -> Result<Vec<N>, TaffyBlueprintError> {
+    node.children()
         .into_iter()
-        .flat_map(|c| _prune_tree(c))
-        .collect();
-    if keep {
-        vec![node.replace_children(converted_children)]
-    } else {
-        converted_children
+        .map(|c| _prune_tree(c))
+        .collect::<Result<Vec<_>, _>>()
+        .map(|v| v.into_iter().flatten().collect())
+}
+
+fn _prune_tree<N: Prune>(mut node: N) -> Result<Vec<N>, TaffyBlueprintError> {
+    match node.keep() {
+        PruneResult::Replace => converted_children(&mut node),
+        PruneResult::Keep => match converted_children(&mut node) {
+            Ok(converted_children) => Ok(vec![node.replace_children(converted_children)]),
+            Err(e) => Err(e),
+        },
+        PruneResult::Undefined => Err(TaffyBlueprintError::Prune),
     }
 }
 
-pub fn prune_tree<N>(root: N) -> Option<N>
+pub fn prune_tree<N>(root: N) -> Result<N, TaffyBlueprintError>
 where
-    N: Prune,
+    N: Prune + std::fmt::Debug,
 {
-    if root.keep() {
-        let pruned_tree = _prune_tree(root);
-        if pruned_tree.len() == 1 {
-            pruned_tree.into_iter().next()
-        } else {
-            None
-        }
-    } else {
-        None
+    let pruned_tree = _prune_tree(root);
+    match pruned_tree {
+        // TODO remove unwrap
+        Ok(pruned_tree) => Ok(pruned_tree.into_iter().next().unwrap()),
+        Err(e) => Err(e),
     }
 }
 

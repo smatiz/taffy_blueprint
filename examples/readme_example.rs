@@ -2,7 +2,7 @@ use taffy::prelude::*;
 use taffy_blueprint::prelude::*;
 
 fn main() {
-    let root = Node::Layout(
+    let root = Node::<()>::Layout(
         "root".to_string(),
         Style {
             flex_direction: FlexDirection::Column,

@@ -1,29 +1,40 @@
-use crate::core::layout::Node;
+use crate::core::{layout::Node, TaffyBlueprintError};
 use taffy::prelude::*;
 
 #[derive(Clone, PartialEq, Debug)]
-pub struct TaffyNodeRaw {
+pub struct TaffyNodeRaw<T>
+where
+    T: Clone + PartialEq + std::fmt::Debug,
+{
     pub node_id: NodeId,
     pub id: Option<String>,
     pub children: Vec<Self>,
+    pub tag: Option<T>,
 }
 #[derive(Clone, Debug)]
-pub struct TaffyRootRaw {
+pub struct TaffyRootRaw<T>
+where
+    T: Clone + PartialEq + std::fmt::Debug,
+{
     pub taffy: TaffyTree,
-    pub root: TaffyNodeRaw,
+    pub root: TaffyNodeRaw<T>,
 }
 
-impl TaffyNodeRaw {
-    fn _to_taffy(taffy: &mut TaffyTree, n: Node) -> Option<Self> {
-        let (id, style, items) = n.get_data();
+impl<T> TaffyNodeRaw<T>
+where
+    T: Clone + PartialEq + std::fmt::Debug,
+{
+    fn _to_taffy(taffy: &mut TaffyTree, n: Node<T>) -> Result<Self, TaffyBlueprintError> {
+        let (id, style, items, tag) = n.get_data();
 
         if items.is_empty() {
             if let Some(style) = style {
                 match taffy.new_leaf(style) {
-                    Ok(node_id) => Some(Self {
+                    Ok(node_id) => Ok(Self {
                         id,
                         node_id,
                         children: vec![],
+                        tag,
                     }),
                     Err(e) => {
                         println!(
@@ -31,17 +42,19 @@ impl TaffyNodeRaw {
                             id.as_deref().unwrap_or("#"),
                             e
                         );
-                        None
+                        Err(TaffyBlueprintError::Taffy(e))
                     }
                 }
             } else {
-                None
+                Err(TaffyBlueprintError::TaffyNodeRaw)
             }
         } else {
-            let taffy_items = items
+            let taffy_items: Result<Vec<_>, _> = items
                 .into_iter()
-                .filter_map(|child| Self::_to_taffy(taffy, child))
-                .collect::<Vec<_>>();
+                .map(|child| Self::_to_taffy(taffy, child))
+                .collect::<Result<_, _>>();
+            let taffy_items: Vec<_> = taffy_items.into_iter().flat_map(|v| v).collect();
+
             match taffy.new_with_children(
                 style.unwrap_or(Style::default()).clone(),
                 &taffy_items
@@ -49,35 +62,38 @@ impl TaffyNodeRaw {
                     .map(|node| node.node_id)
                     .collect::<Vec<_>>(),
             ) {
-                Ok(node_id) => Some(Self {
+                Ok(node_id) => Ok(Self {
                     id,
                     node_id,
                     children: taffy_items,
+                    tag,
                 }),
                 Err(e) => {
                     println!("Error TaffyNode: {}", e);
-                    None
+                    Err(TaffyBlueprintError::Taffy(e))
                 }
             }
         }
     }
-    fn new(taffy: &mut TaffyTree, n: Node) -> Option<Self> {
-        if let Some(taffy_root) = Self::_to_taffy(taffy, n) {
-            match taffy.compute_layout(taffy_root.node_id, Size::MAX_CONTENT) {
-                Ok(_) => Some(taffy_root),
+    fn new(taffy: &mut TaffyTree, n: Node<T>) -> Result<Self, TaffyBlueprintError> {
+        match Self::_to_taffy(taffy, n) {
+            Ok(taffy_root) => match taffy.compute_layout(taffy_root.node_id, Size::MAX_CONTENT) {
+                Ok(_) => Ok(taffy_root),
                 Err(e) => {
                     println!("Error TaffyNode: {}", e);
-                    None
+                    Err(TaffyBlueprintError::Taffy(e))
                 }
-            }
-        } else {
-            None
+            },
+            Err(e) => Err(e),
         }
     }
 }
 
-impl TaffyRootRaw {
-    pub fn new(n: Node) -> Option<Self> {
+impl<T> TaffyRootRaw<T>
+where
+    T: Clone + PartialEq + std::fmt::Debug,
+{
+    pub fn new(n: Node<T>) -> Result<Self, TaffyBlueprintError> {
         let mut taffy = TaffyTree::new();
         TaffyNodeRaw::new(&mut taffy, n).map(|root| Self { taffy, root })
     }
@@ -87,7 +103,7 @@ impl TaffyRootRaw {
 mod tests {
 
     #[derive(Debug)]
-    struct TaffyNodeTest(TaffyNodeRaw);
+    struct TaffyNodeTest(TaffyNodeRaw<()>);
 
     impl PartialEq for TaffyNodeTest {
         fn eq(&self, other: &Self) -> bool {

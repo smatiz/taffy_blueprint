@@ -1,8 +1,11 @@
 use crate::prelude::*;
 use taffy::prelude::*;
 
-impl Node {
-    pub fn screen_root(wrapped: Node) -> Node {
+impl<T> Node<T>
+where
+    T: Clone + PartialEq + std::fmt::Debug,
+{
+    pub fn screen_root(wrapped: Self) -> Self {
         Self::Layout(
             "root".to_string(),
             Style {
@@ -15,7 +18,10 @@ impl Node {
             vec![wrapped],
         )
     }
-    pub fn macroquad_rect(&self) -> Option<TaffyRectNode> {
-        TaffyNode::from_layout_node(self.clone()).map(TaffyRectNode::new)
+    pub fn macroquad_rect(&self) -> Option<TaffyRectNode<T>> {
+        // XXX handle
+        TaffyNode::from_layout_node(self.clone())
+            .map(TaffyRectNode::new)
+            .ok()
     }
 }

@@ -3,7 +3,10 @@ use serde::{Deserialize, Serialize};
 use taffy::prelude::*;
 
 #[derive(Default, Debug, Clone, Deserialize, Serialize)]
-pub enum Node {
+pub enum Node<T>
+where
+    T: Clone + PartialEq + std::fmt::Debug,
+{
     #[default]
     Empty,
     Layout(String, Style, Vec<Self>),
@@ -11,26 +14,35 @@ pub enum Node {
     Id(String, Vec<Self>),
     Leaf(String, Style),
     LeafAnonym(Style),
-    Debug(Box<Node>, DebugLabel),
+    Debug(Box<Self>, T),
 }
 
 #[allow(clippy::from_over_into)]
-impl Into<Vec<Self>> for Node {
+impl<T> Into<Vec<Self>> for Node<T>
+where
+    T: Clone + PartialEq + std::fmt::Debug,
+{
     fn into(self) -> Vec<Self> {
         vec![self]
     }
 }
 
-impl Node {
-    pub(crate) fn get_data(self) -> (Option<String>, Option<Style>, Vec<Self>) {
+impl<T> Node<T>
+where
+    T: Clone + PartialEq + std::fmt::Debug,
+{
+    pub(crate) fn get_data(self) -> (Option<String>, Option<Style>, Vec<Self>, Option<T>) {
         match self {
-            Self::Empty => (None, None, vec![]),
-            Self::Layout(id, style, items) => (Some(id), Some(style), items),
-            Self::Anonym(style, items) => (None, Some(style), items),
-            Self::Id(id, items) => (Some(id), None, items),
-            Self::Leaf(id, style) => (Some(id), Some(style), vec![]),
-            Self::LeafAnonym(style) => (None, Some(style), vec![]),
-            Self::Debug(node, _) => node.get_data(),
+            Self::Empty => (None, None, vec![], None),
+            Self::Layout(id, style, items) => (Some(id), Some(style), items, None),
+            Self::Anonym(style, items) => (None, Some(style), items, None),
+            Self::Id(id, items) => (Some(id), None, items, None),
+            Self::Leaf(id, style) => (Some(id), Some(style), vec![], None),
+            Self::LeafAnonym(style) => (None, Some(style), vec![], None),
+            Self::Debug(node, tag) => {
+                let data = node.get_data();
+                (data.0, data.1, data.2, Some(tag))
+            }
         }
     }
 
@@ -58,27 +70,29 @@ impl Node {
         )
     }
     #[allow(unused)]
+    fn _d(id: &str, items: &[Self]) -> String {
+        let items: Vec<_> = items
+            .iter()
+            .map(|item| item.debug_without_style())
+            .collect();
+        format!("id: {id}, items: {:#?}", items)
+    }
+    #[allow(unused)]
     pub(crate) fn debug_without_style(&self) -> String {
-        fn d(id: &str, items: &[Node]) -> String {
-            let items: Vec<_> = items
-                .iter()
-                .map(|item| item.debug_without_style())
-                .collect();
-            format!("id: {id}, items: {:#?}", items)
-        }
         match self {
             Self::Empty => "Empty".to_string(),
-            Self::Layout(id, _, items) => format!("Node: {}", d(id, items)),
-            Self::Anonym(_, items) => format!("Node: {}", d("#", items)),
-            Self::Id(id, items) => format!("Node: {}", d(id, items)),
-            Self::Leaf(id, _) => format!("Node: {}", d(id, &[])),
-            Self::LeafAnonym(_) => format!("Node: {}", d("#", &[])),
+            Self::Layout(id, _, items) => format!("Node: {}", Self::_d(id, items)),
+            Self::Anonym(_, items) => format!("Node: {}", Self::_d("#", items)),
+            Self::Id(id, items) => format!("Node: {}", Self::_d(id, items)),
+            Self::Leaf(id, _) => format!("Node: {}", Self::_d(id, &[])),
+            Self::LeafAnonym(_) => format!("Node: {}", Self::_d("#", &[])),
             Self::Debug(node, debug_label) => todo!(),
         }
     }
 
     fn _compute(taffy: &mut TaffyTree, n: Self) -> NodeId {
-        let (_, style, children) = n.get_data();
+        // TODO tag?
+        let (_, style, children, tag) = n.get_data();
         if children.is_empty() {
             taffy
                 .new_leaf(style.unwrap_or(h_taffy::style_auto()))
@@ -101,7 +115,10 @@ impl Node {
     }
 }
 
-impl PartialEq for Node {
+impl<T> PartialEq for Node<T>
+where
+    T: Clone + PartialEq + std::fmt::Debug,
+{
     fn eq(&self, other: &Self) -> bool {
         match (self, other) {
             (Self::Layout(l0, l1, l2), Self::Layout(r0, r1, r2)) => {

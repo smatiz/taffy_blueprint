@@ -10,7 +10,7 @@ impl std::fmt::Display for NodeJsonError {
     }
 }
 
-pub fn json_to_node(s: &str) -> Result<Node, NodeJsonError> {
+pub fn json_to_node(s: &str) -> Result<Node<DebugLabel>, NodeJsonError> {
     match NodeJson::create_json(s) {
         Ok(j) => j.try_into(),
         Err(e) => Err(e),

@@ -2,21 +2,21 @@ use super::*;
 use serde::{Deserialize, Serialize};
 use taffy::prelude::*;
 
-#[derive(Default, Debug, Clone, Deserialize, Serialize)]
+#[derive(Default, Debug, Clone, PartialEq, Deserialize, Serialize)]
 pub struct DebugLabel {
     pub position: DebugLabelPosition,
     pub color: String,
     pub info: DebugLabelText,
 }
 
-#[derive(Default, Debug, Clone, Deserialize, Serialize)]
+#[derive(Default, Debug, PartialEq, Clone, Deserialize, Serialize)]
 pub enum DebugLabelText {
     #[default]
     None,
     Id,
     Text(String),
 }
-#[derive(Default, Debug, Clone, Deserialize, Serialize)]
+#[derive(Default, PartialEq, Debug, Clone, Deserialize, Serialize)]
 pub enum DebugLabelPosition {
     #[default]
     Center,
@@ -31,7 +31,7 @@ pub enum DebugLabelPosition {
 }
 
 impl DebugLabelPosition {
-    pub fn place(&self, size: Size<f32>) -> Node {
+    pub fn place(&self, width: f32, height: f32) -> Node<DebugLabel> {
         let (jc, ai) = match self {
             DebugLabelPosition::Center => (JustifyContent::Center, AlignItems::Center),
             DebugLabelPosition::N => (JustifyContent::Start, AlignItems::Center),
@@ -55,8 +55,8 @@ impl DebugLabelPosition {
                 "debug".into(),
                 Style {
                     size: Size {
-                        width: length(size.width),
-                        height: length(size.height),
+                        width: length(width),
+                        height: length(height),
                     },
                     ..Default::default()
                 },

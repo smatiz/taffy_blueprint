@@ -49,7 +49,7 @@ async fn main() {
     let n = Node::screen_root(node);
     let rects = TaffyNode::from_layout_node(n);
 
-    fn draw(t: &TaffyNode) {
+    fn draw(t: &TaffyNode<()>) {
         draw_rectangle_lines(
             t.layout.location.x + t.absolute_position.x,
             t.layout.location.y + t.absolute_position.y,
@@ -65,7 +65,7 @@ async fn main() {
 
     loop {
         clear_background(WHITE);
-        if let Some(ref rects) = rects {
+        if let Ok(ref rects) = rects {
             draw(rects);
         }
         next_frame().await;

@@ -69,42 +69,44 @@ impl TryFrom<String> for Private {
     }
 }
 
-impl TryFrom<NodeJson> for Node {
+impl Node<DebugLabel> {
+    fn children(children: Vec<NodeJson>) -> Result<Vec<Self>, NodeJsonError> {
+        children.into_iter().map(|c| c.try_into()).collect()
+    }
+    fn debug_label(value: NodeJson) -> Result<Self, NodeJsonError> {
+        let r: Result<Self, NodeJsonError> = NodeJson {
+            id: value.id,
+            style: value.style,
+            children: value.children,
+            debug_label: "".into(),
+        }
+        .try_into();
+        match r {
+            Ok(u) => {
+                let v: Result<Private, _> = value.debug_label.try_into();
+                match v {
+                    Ok(v) => Ok(Node::Debug(Box::new(u), v.0)),
+                    Err(e) => {
+                        println!("Warning! debug label not valid: {}", e.msg);
+                        Ok(u)
+                    }
+                }
+            }
+            Err(e) => Err(e),
+        }
+    }
+}
+impl TryFrom<NodeJson> for Node<DebugLabel> {
     type Error = NodeJsonError;
 
     fn try_from(value: NodeJson) -> Result<Self, Self::Error> {
-        fn children(children: Vec<NodeJson>) -> Result<Vec<Node>, NodeJsonError> {
-            children.into_iter().map(|c| c.try_into()).collect()
-        }
-        fn debug_label(value: NodeJson) -> Result<Node, NodeJsonError> {
-            let r: Result<Node, NodeJsonError> = NodeJson {
-                id: value.id,
-                style: value.style,
-                children: value.children,
-                debug_label: "".into(),
-            }
-            .try_into();
-            match r {
-                Ok(u) => {
-                    let v: Result<Private, _> = value.debug_label.try_into();
-                    match v {
-                        Ok(v) => Ok(Node::Debug(Box::new(u), v.0)),
-                        Err(e) => {
-                            println!("Warning! debug label not valid: {}", e.msg);
-                            Ok(u)
-                        }
-                    }
-                }
-                Err(e) => Err(e),
-            }
-        }
         if !value.id.is_empty() {
             if !value.children.is_empty() {
                 if value.style.is_some() {
                     if !value.debug_label.is_empty() {
-                        debug_label(value)
+                        Self::debug_label(value)
                     } else {
-                        match children(value.children) {
+                        match Self::children(value.children) {
                             Ok(children) => Ok(Node::Layout(
                                 value.id,
                                 value.style.unwrap().into(),
@@ -114,7 +116,7 @@ impl TryFrom<NodeJson> for Node {
                         }
                     }
                 } else {
-                    match children(value.children) {
+                    match Self::children(value.children) {
                         Ok(children) => Ok(Node::Id(value.id, children)),
                         Err(e) => Err(e),
                     }
@@ -122,7 +124,7 @@ impl TryFrom<NodeJson> for Node {
             } else {
                 if value.style.is_some() {
                     if !value.debug_label.is_empty() {
-                        debug_label(value)
+                        Self::debug_label(value)
                     } else {
                         Ok(Node::Leaf(value.id, value.style.unwrap().into()))
                     }
@@ -136,10 +138,10 @@ impl TryFrom<NodeJson> for Node {
             if !value.children.is_empty() {
                 if value.style.is_some() {
                     if !value.debug_label.is_empty() {
-                        debug_label(value)
+                        Self::debug_label(value)
                     } else {
-                        match children(value.children) {
-                            Ok(children) => Ok(Node::Anonym(value.style.unwrap().into(), children)),
+                        match Self::children(value.children) {
+                            Ok(children) => Ok(Self::Anonym(value.style.unwrap().into(), children)),
                             Err(e) => Err(e),
                         }
                     }
@@ -151,13 +153,13 @@ impl TryFrom<NodeJson> for Node {
             } else {
                 if value.style.is_some() {
                     if !value.debug_label.is_empty() {
-                        debug_label(value)
+                        Self::debug_label(value)
                     } else {
                         Ok(Node::LeafAnonym(value.style.unwrap().into()))
                     }
                 } else {
                     if !value.debug_label.is_empty() {
-                        debug_label(value)
+                        Self::debug_label(value)
                     } else {
                         Ok(Node::Empty)
                     }

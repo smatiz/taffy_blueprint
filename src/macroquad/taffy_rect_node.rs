@@ -4,12 +4,19 @@ use std::{collections::HashMap, fmt::Debug};
 use crate::core::TaffyNode;
 
 #[derive(Clone, Debug)]
-pub struct TaffyRectNode {
+pub struct TaffyRectNode<T>
+where
+    T: Clone + PartialEq + std::fmt::Debug,
+{
     rect: Rect,
-    children: HashMap<String, TaffyRectNode>,
+    children: HashMap<String, Self>,
+    tag: Option<T>,
 }
-impl TaffyRectNode {
-    fn _rect(t: &TaffyNode) -> Rect {
+impl<T> TaffyRectNode<T>
+where
+    T: Clone + PartialEq + std::fmt::Debug,
+{
+    fn _rect(t: &TaffyNode<T>) -> Rect {
         Rect {
             x: t.layout.location.x + t.absolute_position.x,
             y: t.layout.location.y + t.absolute_position.y,
@@ -18,7 +25,7 @@ impl TaffyRectNode {
         }
     }
 
-    fn _children(children: HashMap<String, TaffyNode>) -> HashMap<String, Self> {
+    fn _children(children: HashMap<String, TaffyNode<T>>) -> HashMap<String, Self> {
         children
             .into_iter()
             .map(|c| {
@@ -27,22 +34,24 @@ impl TaffyRectNode {
                     Self {
                         rect: Self::_rect(&c.1),
                         children: Self::_children(c.1.children),
+                        tag: c.1.tag,
                     },
                 )
             })
             .collect()
     }
 
-    pub fn new(t: TaffyNode) -> Self {
+    pub fn new(t: TaffyNode<T>) -> Self {
         Self {
             rect: Self::_rect(&t),
             children: Self::_children(t.children),
+            tag: t.tag,
         }
     }
-    pub fn get_child(&self, s: &str) -> Option<&TaffyRectNode> {
+    pub fn get_child(&self, s: &str) -> Option<&Self> {
         self.children.get(s)
     }
-    pub fn get_all(&self) -> &HashMap<String, TaffyRectNode> {
+    pub fn get_all(&self) -> &HashMap<String, Self> {
         &self.children
     }
     pub fn rect(&self) -> &Rect {

@@ -14,7 +14,7 @@ fn conf() -> Conf {
 async fn main() {
     let mut reloader = BasicFileHotReloader::new("example.json");
 
-    fn draw(taffy_node: &TaffyNode) {
+    fn draw(id: &String, taffy_node: &TaffyNode<DebugLabel>) {
         draw_rectangle_lines(
             taffy_node.layout.location.x + taffy_node.absolute_position.x,
             taffy_node.layout.location.y + taffy_node.absolute_position.y,
@@ -23,8 +23,28 @@ async fn main() {
             2.0,
             BLACK,
         );
-        for (_, taffy_node) in taffy_node.children.iter() {
-            draw(taffy_node);
+
+        if let Some(ref tag) = taffy_node.tag {
+            let text = match tag.info {
+                DebugLabelText::None => "".to_string(),
+                DebugLabelText::Id => id.to_string(),
+                DebugLabelText::Text(ref text) => text.clone(),
+            };
+
+            let r = measure_text(&text, None, 16, 1.0);
+            let node = tag.position.place(r.width, r.height);
+
+            let taffy_node = TaffyNode::from_layout_node(node).unwrap();
+            let ref d = taffy_node.children["debug"];
+            let x = d.layout.location.x;
+            let y = d.layout.location.y;
+
+            draw_text(&text, x, y, 16.0, RED);
+        }
+
+        // println!("taffy_node.debug: {:?}", taffy_node.tag);
+        for (text, taffy_node) in taffy_node.children.iter() {
+            draw(text, taffy_node);
         }
     }
     let mut taffy_node = None;
@@ -35,14 +55,14 @@ async fn main() {
             match json_to_node(&contents) {
                 Ok(layout_node) => {
                     let n = Node::screen_root(layout_node);
-                    taffy_node = TaffyNode::from_layout_node(n);
+                    taffy_node = TaffyNode::from_layout_node(n).ok();
                 }
                 Err(e) => println!("Error: {}", e),
             }
         }
 
         if let Some(ref taffy_node) = taffy_node {
-            draw(taffy_node);
+            draw(&"".into(), taffy_node);
         }
         next_frame().await;
     }
