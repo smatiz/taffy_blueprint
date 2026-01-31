@@ -59,6 +59,7 @@ name = "json_hot_reloading"
 # doc-scrape-examples = true
 
 [workspace]
+# members = [ ".", "examples/json_hot_reloading.rs", "examples/basic.rs", ]
 # members = ["taffy_macroquad"]
 # The cosmic_text example and benches are excluded from the workspace as including them breaks compilation
 # of all crates in the workspace with our MSRV compiler

@@ -21,6 +21,9 @@
 		]
 	},
 	"settings": {
+    // "workbench.editor.showTabs": "none",
+
+
 		/////////////////////////////////////////////////
 		// "rust-analyzer.checkOnSave": true,
 		// "rust-analyzer.procMacro.enable": true,
@@ -105,10 +108,10 @@
 				"label": "build",
 				"type": "shell",
 				"linux": {
-					"command": "cargo build --features use_json --features use_macroquad"
+					"command": "cargo build  --examples --features use_json --features use_macroquad"
 				},
 				"windows": {
-					"command": "cargo build  --features use_json --features use_macroquad"
+					"command": "cargo build --examples  --features use_json --features use_macroquad"
 				},
 				"args": [],
 				"group": "build",

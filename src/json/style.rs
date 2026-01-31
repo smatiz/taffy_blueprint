@@ -1,9 +1,7 @@
-use std::marker::PhantomData;
-
-use serde::{Deserialize, Serialize};
-use taffy::{prelude::*, Overflow, Point, TextAlign};
-
 use crate::json::helper_convertion::*;
+use serde::{Deserialize, Serialize};
+use std::marker::PhantomData;
+use taffy::{prelude::*, Overflow, Point, TextAlign};
 
 #[derive(Default, Debug, Clone, Deserialize, Serialize)]
 pub struct StyleJson {

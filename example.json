@@ -12,7 +12,8 @@
       "style": {
         "size": "300.0 200.0"
       },
-      "children": []
-    }
+      "children": [],
+      "debug_label": "E #FF0000 *"
+    } 
   ]
 }

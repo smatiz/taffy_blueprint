@@ -14,31 +14,35 @@ fn conf() -> Conf {
 async fn main() {
     let mut reloader = BasicFileHotReloader::new("example.json");
 
-    fn draw(t: &TaffyNode) {
+    fn draw(taffy_node: &TaffyNode) {
         draw_rectangle_lines(
-            t.layout.location.x + t.absolute_position.x,
-            t.layout.location.y + t.absolute_position.y,
-            t.layout.size.width,
-            t.layout.size.height,
+            taffy_node.layout.location.x + taffy_node.absolute_position.x,
+            taffy_node.layout.location.y + taffy_node.absolute_position.y,
+            taffy_node.layout.size.width,
+            taffy_node.layout.size.height,
             2.0,
             BLACK,
         );
-        for (_, rect) in t.children.iter() {
-            draw(rect);
+        for (_, taffy_node) in taffy_node.children.iter() {
+            draw(taffy_node);
         }
     }
-    let mut rects = None;
+    let mut taffy_node = None;
     loop {
         clear_background(WHITE);
 
         if let Some(contents) = reloader.update() {
-            let layout_node = NodeJson::create_node(&contents);
-            let n = Node::screen_root(layout_node);
-            rects = TaffyNode::from_layout_node(n);
+            match json_to_node(&contents) {
+                Ok(layout_node) => {
+                    let n = Node::screen_root(layout_node);
+                    taffy_node = TaffyNode::from_layout_node(n);
+                }
+                Err(e) => println!("Error: {}", e),
+            }
         }
 
-        if let Some(ref rects) = rects {
-            draw(rects);
+        if let Some(ref taffy_node) = taffy_node {
+            draw(taffy_node);
         }
         next_frame().await;
     }

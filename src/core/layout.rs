@@ -11,6 +11,7 @@ pub enum Node {
     Id(String, Vec<Self>),
     Leaf(String, Style),
     LeafAnonym(Style),
+    Debug(Box<Node>, DebugLabel),
 }
 
 #[allow(clippy::from_over_into)]
@@ -29,6 +30,7 @@ impl Node {
             Self::Id(id, items) => (Some(id), None, items),
             Self::Leaf(id, style) => (Some(id), Some(style), vec![]),
             Self::LeafAnonym(style) => (None, Some(style), vec![]),
+            Self::Debug(node, _) => node.get_data(),
         }
     }
 
@@ -71,6 +73,7 @@ impl Node {
             Self::Id(id, items) => format!("Node: {}", d(id, items)),
             Self::Leaf(id, _) => format!("Node: {}", d(id, &[])),
             Self::LeafAnonym(_) => format!("Node: {}", d("#", &[])),
+            Self::Debug(node, debug_label) => todo!(),
         }
     }
 
