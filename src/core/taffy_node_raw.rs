@@ -1,4 +1,4 @@
-use crate::core::{layout::Node, TaffyBlueprintError};
+use crate::core::{node::Node, TaffyBlueprintError};
 use taffy::prelude::*;
 
 #[derive(Clone, PartialEq, Debug)]
@@ -118,7 +118,7 @@ mod tests {
         }
     }
 
-    use crate::core::layout::Node::*;
+    use crate::core::node::Node::*;
 
     use super::*;
     #[test]
@@ -142,7 +142,9 @@ mod tests {
                     id: Some("two".to_string()),
                     node_id: NodeId::new(0),
                     children: vec![],
+                    tag: None
                 }],
+                tag: None
             }),
         );
 
@@ -180,19 +182,24 @@ mod tests {
                             id: Some("three".to_string()),
                             node_id: NodeId::new(0),
                             children: vec![],
+                            tag: None
                         },
                         TaffyNodeRaw {
                             id: None,
                             node_id: NodeId::new(0),
                             children: vec![],
+                            tag: None
                         },
                         TaffyNodeRaw {
                             id: Some("four".to_string()),
                             node_id: NodeId::new(0),
                             children: vec![],
+                            tag: None
                         }
                     ],
+                    tag: None
                 },],
+                tag: None
             }),
         );
     }

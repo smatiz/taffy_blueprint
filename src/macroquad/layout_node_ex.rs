@@ -18,10 +18,7 @@ where
             vec![wrapped],
         )
     }
-    pub fn macroquad_rect(&self) -> Option<TaffyRectNode<T>> {
-        // XXX handle
-        TaffyNode::from_layout_node(self.clone())
-            .map(TaffyRectNode::new)
-            .ok()
+    pub fn macroquad_rect(&self) -> Result<TaffyRectNode<T>, TaffyBlueprintError> {
+        TaffyNode::from_layout_node(self.clone()).map(TaffyRectNode::new)
     }
 }

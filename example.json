@@ -8,12 +8,13 @@
   },
   "children": [
     {
-      "id": "root",
+      "id": "y",
       "style": {
         "size": "300.0 200.0"
       },
       "children": [],
-      "debug_label": "E #FF0000 *"
-    } 
-  ]
+      "debug_label": "Center #FF0000 *"
+    }
+  ],
+  "debug_label": "E #FFFF00 pippo"
 }

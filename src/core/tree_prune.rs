@@ -1,35 +1,25 @@
-use crate::{core::TaffyBlueprintError, json::NodeJsonError};
-
-pub enum PruneResult {
-    Replace,
-    Keep,
-    Undefined,
-}
+use crate::core::TaffyBlueprintError;
 
 pub trait Prune
 where
     Self: Sized,
 {
-    fn keep(&self) -> PruneResult;
-    fn children(&mut self) -> Vec<Self>;
-    fn replace_children(self, children: Vec<Self>) -> Self;
+    fn keep(&self) -> bool;
+    fn children<'a>(&'a self) -> &'a Vec<Self>;
+    fn new(&self, children: Vec<Self>) -> Self;
 }
-fn converted_children<N: Prune>(node: &mut N) -> Result<Vec<N>, TaffyBlueprintError> {
+fn converted_children<N: Prune>(node: &N) -> Vec<N> {
     node.children()
         .into_iter()
-        .map(|c| _prune_tree(c))
-        .collect::<Result<Vec<_>, _>>()
-        .map(|v| v.into_iter().flatten().collect())
+        .flat_map(|c| _prune_tree(c))
+        .collect()
 }
 
-fn _prune_tree<N: Prune>(mut node: N) -> Result<Vec<N>, TaffyBlueprintError> {
-    match node.keep() {
-        PruneResult::Replace => converted_children(&mut node),
-        PruneResult::Keep => match converted_children(&mut node) {
-            Ok(converted_children) => Ok(vec![node.replace_children(converted_children)]),
-            Err(e) => Err(e),
-        },
-        PruneResult::Undefined => Err(TaffyBlueprintError::Prune),
+fn _prune_tree<N: Prune>(node: &N) -> Vec<N> {
+    if node.keep() {
+        vec![node.new(converted_children(node))]
+    } else {
+        converted_children(node)
     }
 }
 
@@ -37,17 +27,19 @@ pub fn prune_tree<N>(root: N) -> Result<N, TaffyBlueprintError>
 where
     N: Prune + std::fmt::Debug,
 {
-    let pruned_tree = _prune_tree(root);
-    match pruned_tree {
-        // TODO remove unwrap
-        Ok(pruned_tree) => Ok(pruned_tree.into_iter().next().unwrap()),
-        Err(e) => Err(e),
+    if root.keep() {
+        _prune_tree(&root)
+            .into_iter()
+            .next()
+            .ok_or(TaffyBlueprintError::Prune("?".into()))
+    } else {
+        Err(TaffyBlueprintError::Prune("Root needs an id".into()))
     }
 }
 
 #[cfg(test)]
 mod tests {
-    #[derive(Debug, PartialEq)]
+    #[derive(Debug, PartialEq, Clone)]
     struct A {
         id: Option<String>,
         children: Vec<A>,
@@ -58,12 +50,15 @@ mod tests {
             self.id.is_some()
         }
 
-        fn children(&mut self) -> Vec<Self> {
-            self.children.drain(0..self.children.len()).collect()
+        fn children<'a>(&'a self) -> &'a Vec<Self> {
+            &self.children
         }
 
-        fn replace_children(self, children: Vec<Self>) -> Self {
-            Self { children, ..self }
+        fn new(&self, children: Vec<Self>) -> Self {
+            Self {
+                children,
+                ..self.clone()
+            }
         }
     }
 
@@ -75,7 +70,7 @@ mod tests {
                 id: None,
                 children: vec![],
             }),
-            None,
+            Err(TaffyBlueprintError::Prune)
         );
 
         assert_eq!(
@@ -83,10 +78,10 @@ mod tests {
                 id: Some("1".to_string()),
                 children: vec![],
             }),
-            Some(A {
+            Ok(A {
                 id: Some("1".to_string()),
                 children: vec![],
-            }),
+            })
         );
 
         assert_eq!(
@@ -106,7 +101,7 @@ mod tests {
                     }],
                 }],
             }),
-            Some(A {
+            Ok(A {
                 id: Some("ROOT".to_string()),
                 children: vec![A {
                     id: Some("1".to_string()),
@@ -172,7 +167,7 @@ mod tests {
                     ],
                 }],
             }),
-            Some(A {
+            Ok(A {
                 id: Some("ROOT".to_string()),
                 children: vec![
                     A {

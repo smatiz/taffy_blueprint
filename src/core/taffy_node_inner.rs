@@ -1,7 +1,7 @@
 use taffy::{prelude::*, Point};
 
 use crate::core::{
-    tree_prune::{prune_tree, Prune, PruneResult},
+    tree_prune::{prune_tree, Prune},
     TaffyBlueprintError, TaffyNodeRaw,
 };
 
@@ -9,24 +9,19 @@ impl<T> Prune for TaffyNodeInner<T>
 where
     T: Clone + PartialEq + std::fmt::Debug,
 {
-    fn keep(&self) -> PruneResult {
-        if self.id.is_some() {
-            PruneResult::Keep
-        } else {
-            if self.children.len() == 1 {
-                PruneResult::Replace
-            } else {
-                PruneResult::Undefined
-            }
+    fn keep(&self) -> bool {
+        self.id.is_some()
+    }
+
+    fn children<'a>(&'a self) -> &'a Vec<Self> {
+        &self.children
+    }
+
+    fn new(&self, children: Vec<Self>) -> Self {
+        Self {
+            children,
+            ..self.clone()
         }
-    }
-
-    fn children(&mut self) -> Vec<Self> {
-        self.children.drain(0..self.children.len()).collect()
-    }
-
-    fn replace_children(self, children: Vec<Self>) -> Self {
-        Self { children, ..self }
     }
 }
 

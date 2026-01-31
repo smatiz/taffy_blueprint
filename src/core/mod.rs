@@ -1,22 +1,16 @@
-mod debug_node;
+mod draw_tag;
+mod error;
 pub mod h_taffy;
-mod layout;
+mod node;
+#[cfg(test)]
+pub mod node_test;
 mod taffy_node;
 mod taffy_node_inner;
 mod taffy_node_raw;
 mod tree_prune;
 
-use taffy::TaffyError;
-
-pub use crate::core::debug_node::*;
-pub use crate::core::layout::Node;
-pub use crate::core::taffy_node::*;
+pub use crate::core::draw_tag::{DrawTag, DrawTagPosition, DrawTagText};
+pub use crate::core::error::TaffyBlueprintError;
+pub use crate::core::node::Node;
+pub use crate::core::taffy_node::TaffyNode;
 pub use crate::core::taffy_node_raw::{TaffyNodeRaw, TaffyRootRaw};
-
-#[derive(Debug)]
-pub enum TaffyBlueprintError {
-    Taffy(TaffyError),
-    TaffyNodeInner,
-    TaffyNodeRaw,
-    Prune,
-}

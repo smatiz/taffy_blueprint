@@ -1,6 +1,6 @@
 use super::*;
 use crate::{
-    core::{DebugLabel, Node},
+    core::{DrawTag, Node},
     json::style::StyleJson,
 };
 use once_cell::sync::Lazy;
@@ -23,58 +23,55 @@ pub(crate) struct NodeJson {
 }
 
 impl NodeJson {
-    pub fn create_json(s: &str) -> Result<Self, NodeJsonError> {
+    pub fn create_json(s: &str) -> Result<Self, TaffyBlueprintError> {
         match serde_json::from_str::<Self>(s) {
             Ok(l) => Ok(l),
-            Err(e) => Err(NodeJsonError {
-                msg: format!("Error LayoutJson: {}", e),
-            }),
+            Err(e) => Err(TaffyBlueprintError::Json(format!(
+                "Error LayoutJson: {}",
+                e
+            ))),
         }
     }
 }
 
-struct Private(pub DebugLabel);
+struct Private(pub DrawTag);
 impl TryFrom<String> for Private {
-    type Error = NodeJsonError;
+    type Error = TaffyBlueprintError;
 
     fn try_from(value: String) -> Result<Self, Self::Error> {
         if value == "" {
-            return Ok(Private(DebugLabel {
-                position: DebugLabelPosition::Center,
+            return Ok(Private(DrawTag {
+                position: DrawTagPosition::Center,
                 color: "".into(),
-                info: DebugLabelText::None,
+                info: DrawTagText::None,
             }));
         }
         if let Some(caps) = RE.captures(&value) {
             let position = serde_json::from_str(&format!("\"{}\"", &caps["position"]));
             match position {
-                Ok(position) => Ok(Private(DebugLabel {
+                Ok(position) => Ok(Private(DrawTag {
                     position,
                     color: caps["color"].into(),
                     info: match caps["info"].into() {
-                        "*" => DebugLabelText::Id,
-                        "" => DebugLabelText::None,
-                        s => DebugLabelText::Text(s.into()),
+                        "*" => DrawTagText::Id,
+                        "" => DrawTagText::None,
+                        s => DrawTagText::Text(s.into()),
                     },
                 })),
-                Err(_) => Err(NodeJsonError {
-                    msg: "Invalid DebugLabel".into(),
-                }),
+                Err(_) => Err(TaffyBlueprintError::Json("Invalid DebugLabel".into())),
             }
         } else {
-            Err(NodeJsonError {
-                msg: "Invalid DebugLabel".into(),
-            })
+            Err(TaffyBlueprintError::Json("Invalid DebugLabel".into()))
         }
     }
 }
 
-impl Node<DebugLabel> {
-    fn children(children: Vec<NodeJson>) -> Result<Vec<Self>, NodeJsonError> {
+impl Node<DrawTag> {
+    fn children(children: Vec<NodeJson>) -> Result<Vec<Self>, TaffyBlueprintError> {
         children.into_iter().map(|c| c.try_into()).collect()
     }
-    fn debug_label(value: NodeJson) -> Result<Self, NodeJsonError> {
-        let r: Result<Self, NodeJsonError> = NodeJson {
+    fn debug_label(value: NodeJson) -> Result<Self, TaffyBlueprintError> {
+        let r: Result<Self, TaffyBlueprintError> = NodeJson {
             id: value.id,
             style: value.style,
             children: value.children,
@@ -86,18 +83,21 @@ impl Node<DebugLabel> {
                 let v: Result<Private, _> = value.debug_label.try_into();
                 match v {
                     Ok(v) => Ok(Node::Debug(Box::new(u), v.0)),
-                    Err(e) => {
-                        println!("Warning! debug label not valid: {}", e.msg);
-                        Ok(u)
-                    }
+                    Err(e) => match e {
+                        TaffyBlueprintError::Json(msg) => {
+                            println!("Warning! debug label not valid: {}", msg);
+                            Ok(u)
+                        }
+                        _ => Err(e),
+                    },
                 }
             }
             Err(e) => Err(e),
         }
     }
 }
-impl TryFrom<NodeJson> for Node<DebugLabel> {
-    type Error = NodeJsonError;
+impl TryFrom<NodeJson> for Node<DrawTag> {
+    type Error = TaffyBlueprintError;
 
     fn try_from(value: NodeJson) -> Result<Self, Self::Error> {
         if !value.id.is_empty() {
@@ -106,20 +106,12 @@ impl TryFrom<NodeJson> for Node<DebugLabel> {
                     if !value.debug_label.is_empty() {
                         Self::debug_label(value)
                     } else {
-                        match Self::children(value.children) {
-                            Ok(children) => Ok(Node::Layout(
-                                value.id,
-                                value.style.unwrap().into(),
-                                children,
-                            )),
-                            Err(e) => Err(e),
-                        }
+                        Self::children(value.children).map(|children| {
+                            Node::Layout(value.id, value.style.unwrap().into(), children)
+                        })
                     }
                 } else {
-                    match Self::children(value.children) {
-                        Ok(children) => Ok(Node::Id(value.id, children)),
-                        Err(e) => Err(e),
-                    }
+                    Self::children(value.children).map(|children| Node::Id(value.id, children))
                 }
             } else {
                 if value.style.is_some() {
@@ -129,9 +121,9 @@ impl TryFrom<NodeJson> for Node<DebugLabel> {
                         Ok(Node::Leaf(value.id, value.style.unwrap().into()))
                     }
                 } else {
-                    Err(NodeJsonError {
-                        msg: "id will be loosed. Add at least a style or some children".into(),
-                    })
+                    Err(TaffyBlueprintError::Json(
+                        "single id is not handled. Add at least a style or some children".into(),
+                    ))
                 }
             }
         } else {
@@ -140,15 +132,11 @@ impl TryFrom<NodeJson> for Node<DebugLabel> {
                     if !value.debug_label.is_empty() {
                         Self::debug_label(value)
                     } else {
-                        match Self::children(value.children) {
-                            Ok(children) => Ok(Self::Anonym(value.style.unwrap().into(), children)),
-                            Err(e) => Err(e),
-                        }
+                        Self::children(value.children)
+                            .map(|children| Self::Anonym(value.style.unwrap().into(), children))
                     }
                 } else {
-                    Err(NodeJsonError {
-                        msg: "children will be loosed. Add at least an id or a style.".into(),
-                    })
+                    Self::children(value.children).map(|children| Self::fork(children))
                 }
             } else {
                 if value.style.is_some() {
