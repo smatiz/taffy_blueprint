@@ -1,8 +1,5 @@
 use super::*;
-use crate::{
-    core::{DrawTag, Node},
-    json::style::StyleJson,
-};
+use crate::{core::Node, json::style::StyleJson};
 use once_cell::sync::Lazy;
 use regex::Regex;
 use serde::{Deserialize, Serialize};

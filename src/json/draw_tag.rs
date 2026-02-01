@@ -31,13 +31,13 @@ pub enum DrawTagPosition {
 }
 
 impl DrawTagPosition {
-    pub fn node(
+    pub fn location(
         &self,
         rect_width: f32,
         rect_height: f32,
         text_width: f32,
         text_height: f32,
-    ) -> Node<DrawTag> {
+    ) -> Result<(f32, f32), TaffyBlueprintError> {
         let (jc, ai) = match self {
             DrawTagPosition::Center => (JustifyContent::Center, AlignItems::Center),
             DrawTagPosition::N => (JustifyContent::Center, AlignItems::Start),
@@ -50,7 +50,7 @@ impl DrawTagPosition {
             DrawTagPosition::SW => (JustifyContent::Start, AlignItems::End),
         };
 
-        Node::Layout(
+        let node = Node::<Self>::Layout(
             "node".into(),
             Style {
                 size: Size {
@@ -72,6 +72,11 @@ impl DrawTagPosition {
                     ..Default::default()
                 },
             )],
-        )
+        );
+
+        TaffyNode::from_layout_node(node).map(|taffy_node| {
+            let ref d = taffy_node.children["debug"];
+            (d.layout.location.x, d.layout.location.y)
+        })
     }
 }
