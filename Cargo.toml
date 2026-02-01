@@ -16,9 +16,9 @@ taffy = { version = "0.9.2", features = ["serde"] }
 serde = { version = "1.0.228", features = ["derive"] }
 macroquad = { version = "0.4.14", optional = true }
 # egui-macroquad= { version = "0.17.3", optional = true }
-serde_json = { version = "1.0.149", optional = true }
+serde_json5 = { version = "0.2.1", optional = true }
 regex = { version = "1.12.2", optional = true }
-once_cell =  { version ="1.21.3", optional = true }
+once_cell = { version = "1.21.3", optional = true }
 # derivative = "2.2.0"
 # [package.metadata.docs.rs]
 # # To test all the documentation related features, run:
@@ -30,8 +30,8 @@ once_cell =  { version ="1.21.3", optional = true }
 # rustdoc-args = ["--cfg", "docsrs"]
 
 [features]
-use_macroquad = ["macroquad"]#, "egui-macroquad"
-use_json = ["serde_json", "regex", "once_cell"]
+use_macroquad = ["macroquad"]                    #, "egui-macroquad"
+use_json = ["serde_json5", "regex", "once_cell"]
 
 [dev-dependencies]
 macroquad = "0.4.14"

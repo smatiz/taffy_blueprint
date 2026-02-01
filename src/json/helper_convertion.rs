@@ -144,18 +144,18 @@ where
     }
 }
 
-fn to_grid_placement(s: &str) -> GridPlacement {
+pub fn to_grid_placement(s: &str) -> GridPlacement {
     let s = s.trim();
     if s == "*" {
         GridPlacement::Auto
     } else if let Some(caps) = RE_LINE.captures(s) {
-        if caps["name"].is_empty() {
+        if caps.name("name").is_none() {
             GridPlacement::Line(caps["v"].parse::<i16>().unwrap().into())
         } else {
             GridPlacement::NamedLine(caps["name"].to_string(), caps["v"].parse::<i16>().unwrap())
         }
     } else if let Some(caps) = RE_SPAN.captures(s) {
-        if caps["name"].is_empty() {
+        if caps.name("name").is_none() {
             GridPlacement::Span(s.parse::<u16>().unwrap())
         } else {
             GridPlacement::NamedSpan(caps["name"].to_string(), caps["v"].parse::<u16>().unwrap())
@@ -164,16 +164,17 @@ fn to_grid_placement(s: &str) -> GridPlacement {
         GridPlacement::Auto
     }
 }
-pub fn to_line(s: &str) -> Line<GridPlacement> {
-    if let Some(caps) = RE_2.captures(&s) {
-        Line {
-            start: to_grid_placement(&caps["w"]),
-            end: to_grid_placement(&caps["h"]),
-        }
-    } else {
-        Line::auto()
-    }
-}
+// pub fn to_line(s: &str) -> Line<GridPlacement> {
+//     if let Some(caps) = RE_2.captures(&s) {
+//         let l = Line {
+//             start: to_grid_placement(&caps["w"]),
+//             end: to_grid_placement(&caps["h"]),
+//         };
+//         l
+//     } else {
+//         Line::auto()
+//     }
+// }
 
 pub fn to_grid_template_areas(s: String) -> GridTemplateArea<String> {
     if let Some(caps) = RE_GRID_AREA.captures(&s) {

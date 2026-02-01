@@ -17,7 +17,7 @@ pub struct ComboBox {
 
 const THICKNESS: f32 = 2.0;
 const MARGIN: f32 = 2.0;
-const CHOOSE: &str = "choose..";
+const CHOOSE: &str = "choose an example..";
 impl ComboBox {
     pub fn new() -> Self {
         Self {

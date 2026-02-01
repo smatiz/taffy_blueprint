@@ -21,7 +21,7 @@ pub(crate) struct NodeJson {
 
 impl NodeJson {
     pub fn create(s: &str) -> Result<Self, TaffyBlueprintError> {
-        match serde_json::from_str::<Self>(s) {
+        match serde_json5::from_str::<Self>(s) {
             Ok(l) => Ok(l),
             Err(e) => Err(TaffyBlueprintError::Json(format!(
                 "Error LayoutJson: {}",
@@ -44,7 +44,7 @@ impl TryFrom<String> for Private {
             }));
         }
         if let Some(caps) = RE.captures(&value) {
-            let position = serde_json::from_str(&format!("\"{}\"", &caps["position"]));
+            let position = serde_json5::from_str(&format!("\"{}\"", &caps["position"]));
             match position {
                 Ok(position) => Ok(Private(DrawTag {
                     position,

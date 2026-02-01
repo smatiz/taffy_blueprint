@@ -9,13 +9,24 @@ pub struct DrawTag {
     pub info: DrawTagText,
 }
 
-#[derive(Default, Debug, PartialEq, Clone, Deserialize, Serialize)]
+#[derive(Default, PartialEq, Debug, Clone, Deserialize, Serialize)]
 pub enum DrawTagText {
     #[default]
     None,
     Id,
     Text(String),
 }
+
+// impl std::fmt::Debug for DrawTagText {
+//     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+//         match self {
+//             Self::None => write!(f, "None"),
+//             Self::Id => write!(f, "Id"),
+//             Self::Text(arg0) => f.debug_tuple("Text").field(arg0).finish(),
+//         }
+//     }
+// }
+
 #[derive(Default, PartialEq, Debug, Clone, Deserialize, Serialize)]
 pub enum DrawTagPosition {
     #[default]
@@ -75,7 +86,7 @@ impl DrawTagPosition {
         );
 
         TaffyNode::from_layout_node(node).map(|taffy_node| {
-            let ref d = taffy_node.children["debug"];
+            let d = &taffy_node.children["debug"];
             (d.layout.location.x, d.layout.location.y)
         })
     }

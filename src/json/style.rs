@@ -82,9 +82,9 @@ pub struct StyleJson {
     #[serde(default)]
     pub grid_template_row_names: Vec<Vec<String>>,
     #[serde(default)]
-    pub grid_row: String,
+    pub grid_row: [String; 2],
     #[serde(default)]
-    pub grid_column: String,
+    pub grid_column: [String; 2],
 }
 
 impl From<StyleJson> for Style {
@@ -138,8 +138,16 @@ impl From<StyleJson> for Style {
             grid_auto_rows: s.grid_auto_rows.into_iter().map(to_min_max).collect(),
             grid_auto_columns: s.grid_auto_columns.into_iter().map(to_min_max).collect(),
 
-            grid_row: to_line(&s.grid_row),
-            grid_column: to_line(&s.grid_column),
+            grid_row: Line {
+                start: to_grid_placement(&s.grid_row[0]),
+                end: to_grid_placement(&s.grid_row[1]),
+            },
+            grid_column: Line {
+                start: to_grid_placement(&s.grid_column[0]),
+                end: to_grid_placement(&s.grid_column[1]),
+            },
+            //   to_line(&s.grid_row),
+            // grid_column: to_line(&s.grid_column),
             grid_template_areas: s
                 .grid_template_areas
                 .into_iter()

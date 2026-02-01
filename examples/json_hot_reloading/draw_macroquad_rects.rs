@@ -11,6 +11,8 @@ pub fn draw(id: &String, taffy_node: &TaffyNode<DrawTag>, tag: Option<&DrawTag>)
         BLACK,
     );
 
+    // println!("taffy_node.tag {:?}", taffy_node.tag);
+    // println!("tag {:?}", tag);
     let ref current_tag = taffy_node.tag.as_ref().or(tag);
     if let Some(ref tag) = current_tag {
         let text = match tag.info {
@@ -18,7 +20,7 @@ pub fn draw(id: &String, taffy_node: &TaffyNode<DrawTag>, tag: Option<&DrawTag>)
             DrawTagText::Id => id.to_string(),
             DrawTagText::Text(ref text) => text.clone(),
         };
-
+        // println!("current_tag {:?}", tag.info);
         let r = measure_text(&text, None, 16, 1.0);
         match tag.position.location(
             taffy_node.layout.size.width,
@@ -29,8 +31,8 @@ pub fn draw(id: &String, taffy_node: &TaffyNode<DrawTag>, tag: Option<&DrawTag>)
             Ok((x, y)) => {
                 draw_text(
                     &text,
-                    x,
-                    y,
+                    x + taffy_node.layout.location.x + taffy_node.absolute_position.x,
+                    y + taffy_node.layout.location.y + taffy_node.absolute_position.y + r.offset_y,
                     16.0,
                     helper::string_to_color(&tag.color).unwrap_or(BLACK),
                 );

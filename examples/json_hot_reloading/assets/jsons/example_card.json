@@ -1,0 +1,255 @@
+{
+  "id": "root",
+  "style": {
+    "size": "100% 100%",
+    "flex_direction": "Column",
+    "justify_content": "Center",
+    "align_items": "Center"
+  },
+  "children": [
+    {
+      "id": "container",
+      "style": {
+        "size": "100% 80%",
+        "flex_direction": "Row",
+        "justify_content": "Center",
+        "align_items": "Center"
+      },
+      "children": [
+        {
+          "id": "card 1",
+          "style": {
+            "size": "250 *",
+            "flex_direction": "Column",
+            "justify_content": "Center",
+            "align_items": "Center",
+            "margin": "10 10 10 10"
+          },
+          "debug_label": "SE #FF0000 *",
+          "children": [
+            {
+              "id": "title",
+              "style": {
+                "size": "200 60",
+                "margin": "20 20 20 0"
+              },
+              "debug_label": "Center #FF0000 *"
+            },
+            {
+              "id": "subtile",
+              "style": {
+                "size": "200 30",
+                "margin": "20 0 20 20"
+              },
+              "debug_label": "Center #FF0000 *"
+            },
+            {
+              "id": "grid",
+              "style": {
+                "size": "200 200",
+                "display": "Grid",
+                "grid_template_rows": ["50%", "50%"],
+                "grid_template_columns": ["50%", "50%"],
+                "margin": "20 0 20 20"
+              },
+              "children": [
+                {
+                  "id": "energy",
+                  "style": {
+                    "grid_row": ["line 2", "line 2"],
+                    "grid_column": ["line 2", "line 2"],
+                    "size": "*"
+                  },
+                  "debug_label": "Center #FF0000 *"
+                },
+                {
+                  "id": "intelligence",
+                  "style": {
+                    "grid_row": ["line 1", "line 1"],
+                    "grid_column": ["line 1", "line 1"],
+                    "size": "*"
+                  },
+                  "debug_label": "Center #FF0000 *"
+                },
+                {
+                  "id": "strength",
+                  "style": {
+                    "grid_row": ["line 1", "line 1"],
+                    "grid_column": ["line 2", "line 2"],
+                    "size": "*"
+                  },
+                  "debug_label": "Center #FF0000 *"
+                },
+                {
+                  "id": "mana",
+                  "style": {
+                    "grid_row": ["line 2", "line 2"],
+                    "grid_column": ["line 1", "line 1"],
+                    "size": "*"
+                  },
+                  "debug_label": "Center #FF0000 *"
+                }
+              ]
+            }
+          ]
+        },
+        //
+        {
+          "id": "card 2",
+          "style": {
+            "size": "250 *",
+            "flex_direction": "Column",
+            "justify_content": "Center",
+            "align_items": "Center",
+            "margin": "10 10 10 10"
+          },
+          "debug_label": "SE #FF0000 *",
+          "children": [
+            {
+              "id": "title",
+              "style": {
+                "size": "200 60",
+                "margin": "20 20 20 0"
+              },
+              "debug_label": "Center #FF0000 *"
+            },
+            {
+              "id": "subtile",
+              "style": {
+                "size": "200 30",
+                "margin": "20 0 20 20"
+              },
+              "debug_label": "Center #FF0000 *"
+            },
+            {
+              "id": "grid",
+              "style": {
+                "size": "200 200",
+                "display": "Grid",
+                "grid_template_rows": ["50%", "50%"],
+                "grid_template_columns": ["50%", "50%"],
+                "margin": "20 0 20 20"
+              },
+              "children": [
+                {
+                  "id": "energy",
+                  "style": {
+                    "grid_row": ["line 2", "line 2"],
+                    "grid_column": ["line 2", "line 2"],
+                    "size": "*"
+                  },
+                  "debug_label": "Center #FF0000 *"
+                },
+                {
+                  "id": "intelligence",
+                  "style": {
+                    "grid_row": ["line 1", "line 1"],
+                    "grid_column": ["line 1", "line 1"],
+                    "size": "*"
+                  },
+                  "debug_label": "Center #FF0000 *"
+                },
+                {
+                  "id": "strength",
+                  "style": {
+                    "grid_row": ["line 1", "line 1"],
+                    "grid_column": ["line 2", "line 2"],
+                    "size": "*"
+                  },
+                  "debug_label": "Center #FF0000 *"
+                },
+                {
+                  "id": "mana",
+                  "style": {
+                    "grid_row": ["line 2", "line 2"],
+                    "grid_column": ["line 1", "line 1"],
+                    "size": "*"
+                  },
+                  "debug_label": "Center #FF0000 *"
+                }
+              ]
+            }
+          ]
+        },
+        //
+        {
+          "id": "card 3",
+          "style": {
+            "size": "250 *",
+            "flex_direction": "Column",
+            "justify_content": "Center",
+            "align_items": "Center",
+            "margin": "10 10 10 10"
+          },
+          "debug_label": "SE #FF0000 *",
+          "children": [
+            {
+              "id": "title",
+              "style": {
+                "size": "200 60",
+                "margin": "20 20 20 0"
+              },
+              "debug_label": "Center #FF0000 *"
+            },
+            {
+              "id": "subtile",
+              "style": {
+                "size": "200 30",
+                "margin": "20 0 20 20"
+              },
+              "debug_label": "Center #FF0000 *"
+            },
+            {
+              "id": "grid",
+              "style": {
+                "size": "200 200",
+                "display": "Grid",
+                "grid_template_rows": ["50%", "50%"],
+                "grid_template_columns": ["50%", "50%"],
+                "margin": "20 0 20 20"
+              },
+              "children": [
+                {
+                  "id": "energy",
+                  "style": {
+                    "grid_row": ["line 2", "line 2"],
+                    "grid_column": ["line 2", "line 2"],
+                    "size": "*"
+                  },
+                  "debug_label": "Center #FF0000 *"
+                },
+                {
+                  "id": "intelligence",
+                  "style": {
+                    "grid_row": ["line 1", "line 1"],
+                    "grid_column": ["line 1", "line 1"],
+                    "size": "*"
+                  },
+                  "debug_label": "Center #FF0000 *"
+                },
+                {
+                  "id": "strength",
+                  "style": {
+                    "grid_row": ["line 1", "line 1"],
+                    "grid_column": ["line 2", "line 2"],
+                    "size": "*"
+                  },
+                  "debug_label": "Center #FF0000 *"
+                },
+                {
+                  "id": "mana",
+                  "style": {
+                    "grid_row": ["line 2", "line 2"],
+                    "grid_column": ["line 1", "line 1"],
+                    "size": "*"
+                  },
+                  "debug_label": "Center #FF0000 *"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

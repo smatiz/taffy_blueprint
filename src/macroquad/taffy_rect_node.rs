@@ -57,6 +57,9 @@ where
     pub fn rect(&self) -> &Rect {
         &self.rect
     }
+    pub fn tag(&self) -> &Option<T> {
+        &self.tag
+    }
     fn _print(n: &Self, name: &str, depth: usize) {
         println!(
             "{} >{}< {:?} ({})",

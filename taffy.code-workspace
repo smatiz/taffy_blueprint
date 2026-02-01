@@ -86,7 +86,8 @@
 		"editor.defaultFormatter": null,
 		"todo-tree.regex.regex": "(//|#|<!--|;|/\\*|^|^[ \\t]*(-|\\d+.))\\s*($TAGS)",
 		"[json]": {
-			"editor.defaultFormatter": "esbenp.prettier-vscode"
+			"editor.defaultFormatter": "esbenp.prettier-vscode",
+			"prettier.trailingComma": "all"
 		},
 	},
 	"tasks": {

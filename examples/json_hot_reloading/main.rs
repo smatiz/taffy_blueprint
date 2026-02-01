@@ -1,5 +1,5 @@
 mod combox_component;
-mod draw_rects;
+mod draw_macroquad_rects;
 mod json_picker_component;
 mod reloader;
 mod update_result;
@@ -37,7 +37,7 @@ async fn main() {
             }
 
             if let Some(ref taffy_node) = taffy_node {
-                draw_rects::draw(&"".into(), taffy_node, taffy_node.tag.as_ref());
+                draw_macroquad_rects::draw(&"".into(), taffy_node, taffy_node.tag.as_ref());
             }
         }
         picker.draw();
