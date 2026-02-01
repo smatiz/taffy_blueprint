@@ -20,7 +20,7 @@ pub(crate) struct NodeJson {
 }
 
 impl NodeJson {
-    pub fn create_json(s: &str) -> Result<Self, TaffyBlueprintError> {
+    pub fn create(s: &str) -> Result<Self, TaffyBlueprintError> {
         match serde_json::from_str::<Self>(s) {
             Ok(l) => Ok(l),
             Err(e) => Err(TaffyBlueprintError::Json(format!(
@@ -151,5 +151,38 @@ impl TryFrom<NodeJson> for Node<DrawTag> {
                 }
             }
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use taffy::prelude::*;
+
+    use super::*;
+    #[test]
+    fn test_() {
+        let lj = NodeJson::create(
+            r#"
+                {
+                    "id": "a",
+                    "style": {
+                        "size": "123.4 234.5"
+                    },
+                    "children":[]
+                }
+        "#,
+        );
+        let l = Node::Layout(
+            "a".into(),
+            Style {
+                size: Size {
+                    width: length(123.4),
+                    height: length(234.5),
+                },
+                ..Default::default()
+            },
+            vec![],
+        );
+        assert_eq!(lj, l);
     }
 }
