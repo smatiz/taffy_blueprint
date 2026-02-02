@@ -5,6 +5,5 @@ pub mod json;
 mod node_json;
 mod style;
 
-use super::*;
 pub use draw_tag::*;
 use node_json::*;

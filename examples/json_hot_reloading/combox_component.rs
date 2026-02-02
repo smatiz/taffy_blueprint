@@ -11,12 +11,12 @@ pub struct ComboBox {
     pub open: bool,
     items: Vec<Item>,
     text_position: Vec2,
-    component_rect: Option<Rect>,
+    pub component_rect: Option<Rect>,
     font_size: f32,
 }
 
 const THICKNESS: f32 = 2.0;
-const MARGIN: f32 = 2.0;
+const TEXT_MARGIN: f32 = 2.0;
 const CHOOSE: &str = "choose an example..";
 impl ComboBox {
     pub fn new() -> Self {
@@ -50,12 +50,12 @@ impl ComboBox {
         let component_rect = Rect {
             x: x,
             y: y,
-            w: w + 2.0 * MARGIN,
-            h: h + 2.0 * MARGIN,
+            w: w + 2.0 * TEXT_MARGIN,
+            h: h + 2.0 * TEXT_MARGIN,
         };
         self.text_position = vec2(
-            x + MARGIN + (component_rect.w - text_r.width) * 0.5,
-            y + MARGIN + text_r.offset_y,
+            x + TEXT_MARGIN + (component_rect.w - text_r.width) * 0.5,
+            y + TEXT_MARGIN + text_r.offset_y,
         );
         self.component_rect = Some(component_rect);
         let (mx, my) = mouse_position();
@@ -70,8 +70,8 @@ impl ComboBox {
                 Item {
                     text: name,
                     text_position: vec2(
-                        x + MARGIN + (component_rect.w - r.width) * 0.5,
-                        y + MARGIN + (1 + i) as f32 * component_rect.h + r.offset_y,
+                        x + TEXT_MARGIN + (component_rect.w - r.width) * 0.5,
+                        y + TEXT_MARGIN + (1 + i) as f32 * component_rect.h + r.offset_y,
                     ),
                     rect: component_rect.offset(vec2(0.0, (1 + i) as f32 * component_rect.h)),
                 }

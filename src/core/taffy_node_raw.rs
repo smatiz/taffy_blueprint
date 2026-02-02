@@ -53,7 +53,7 @@ where
                 .into_iter()
                 .map(|child| Self::_to_taffy(taffy, child))
                 .collect::<Result<_, _>>();
-            let taffy_items: Vec<_> = taffy_items.into_iter().flat_map(|v| v).collect();
+            let taffy_items: Vec<_> = taffy_items.into_iter().flatten().collect();
 
             match taffy.new_with_children(
                 style.unwrap_or(Style::default()).clone(),

@@ -13,11 +13,11 @@ where
         self.id.is_some()
     }
 
-    fn children<'a>(&'a self) -> &'a Vec<Self> {
+    fn children(&self) -> &Vec<Self> {
         &self.children
     }
 
-    fn new(&self, children: Vec<Self>) -> Self {
+    fn create_with(&self, children: Vec<Self>) -> Self {
         Self {
             children,
             ..self.clone()

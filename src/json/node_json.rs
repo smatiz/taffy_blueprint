@@ -1,4 +1,5 @@
 use super::*;
+use crate::core::*;
 use crate::{core::Node, json::style::StyleJson};
 use once_cell::sync::Lazy;
 use regex::Regex;

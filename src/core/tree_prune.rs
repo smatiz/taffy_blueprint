@@ -5,19 +5,19 @@ where
     Self: Sized,
 {
     fn keep(&self) -> bool;
-    fn children<'a>(&'a self) -> &'a Vec<Self>;
-    fn new(&self, children: Vec<Self>) -> Self;
+    fn children(&self) -> &Vec<Self>;
+    fn create_with(&self, children: Vec<Self>) -> Self;
 }
 fn converted_children<N: Prune>(node: &N) -> Vec<N> {
     node.children()
-        .into_iter()
+        .iter()
         .flat_map(|c| _prune_tree(c))
         .collect()
 }
 
 fn _prune_tree<N: Prune>(node: &N) -> Vec<N> {
     if node.keep() {
-        vec![node.new(converted_children(node))]
+        vec![node.create_with(converted_children(node))]
     } else {
         converted_children(node)
     }
@@ -54,7 +54,7 @@ mod tests {
             &self.children
         }
 
-        fn new(&self, children: Vec<Self>) -> Self {
+        fn create_with(&self, children: Vec<Self>) -> Self {
             Self {
                 children,
                 ..self.clone()
