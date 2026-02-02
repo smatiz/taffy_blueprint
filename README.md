@@ -1,7 +1,8 @@
 
-Taffy is a flexible, high-performance, cross-platform UI layout library written in [Rust](https://www.rust-lang.org).
-Taffy Blueprint is built on top of it.
+[Taffy](https://github.com/DioxusLabs/taffy) is a flexible, high-performance, cross-platform UI layout library written in [Rust](https://www.rust-lang.org).
 
+Taffy Blueprint is built on top of it.
+It provides a declarative LayoutNode for building your UI, supports JSON hot‑reloading for rapid prototyping, and includes a practical Macroquad integration example.
 
 ## Usage
 
