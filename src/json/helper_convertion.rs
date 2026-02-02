@@ -2,16 +2,16 @@ use once_cell::sync::Lazy;
 use regex::Regex;
 use taffy::{prelude::*, GridTemplateArea, MinMax};
 
-static RE_2: Lazy<Regex> = Lazy::new(|| Regex::new(r"(?<w>[^ ]+) (?<h>[^ ]+)").unwrap());
+pub(crate) static RE_2: Lazy<Regex> = Lazy::new(|| Regex::new(r"(?<w>[^ ]+) (?<h>[^ ]+)").unwrap());
 static RE_4: Lazy<Regex> = Lazy::new(|| {
     Regex::new(r"(?<left>[^ ]+) (?<top>[^ ]+) (?<right>[^ ]+) (?<bottom>[^ ]+)").unwrap()
 });
-static RE_LINE: Lazy<Regex> =
+pub(crate) static RE_LINE: Lazy<Regex> =
     Lazy::new(|| Regex::new(r"line ((?<name>[^ ]+) )?(?<v>[^ ]+)").unwrap());
-static RE_SPAN: Lazy<Regex> =
+pub(crate) static RE_SPAN: Lazy<Regex> =
     Lazy::new(|| Regex::new(r"span ((?<name>[^ ]+) )?(?<v>[^ ]+)").unwrap());
 
-static RE_GRID_AREA: Lazy<Regex> = Lazy::new(|| {
+pub(crate) static RE_GRID_AREA: Lazy<Regex> = Lazy::new(|| {
     Regex::new(r"(?<name>[^ ]+) (?<row_start>[^ ]+) (?<row_end>[^ ]+) (?<column_start>[^ ]+) (?<column_end>[^ ]+)")
         .unwrap()
 });
@@ -164,17 +164,6 @@ pub fn to_grid_placement(s: &str) -> GridPlacement {
         GridPlacement::Auto
     }
 }
-// pub fn to_line(s: &str) -> Line<GridPlacement> {
-//     if let Some(caps) = RE_2.captures(&s) {
-//         let l = Line {
-//             start: to_grid_placement(&caps["w"]),
-//             end: to_grid_placement(&caps["h"]),
-//         };
-//         l
-//     } else {
-//         Line::auto()
-//     }
-// }
 
 pub fn to_grid_template_areas(s: String) -> GridTemplateArea<String> {
     if let Some(caps) = RE_GRID_AREA.captures(&s) {

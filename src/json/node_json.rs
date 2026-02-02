@@ -159,10 +159,12 @@ impl TryFrom<NodeJson> for Node<DrawTag> {
 mod tests {
     use taffy::prelude::*;
 
+    use crate::json::json::json_to_node;
+
     use super::*;
     #[test]
     fn test_() {
-        let lj = NodeJson::create(
+        let lj = json_to_node(
             r#"
                 {
                     "id": "a",
@@ -173,7 +175,7 @@ mod tests {
                 }
         "#,
         );
-        let l = Node::Layout(
+        let l = Node::<DrawTag>::Leaf(
             "a".into(),
             Style {
                 size: Size {
@@ -182,8 +184,7 @@ mod tests {
                 },
                 ..Default::default()
             },
-            vec![],
         );
-        assert_eq!(lj, l);
+        assert_eq!(lj.unwrap(), l);
     }
 }

@@ -70,7 +70,7 @@ mod tests {
                 id: None,
                 children: vec![],
             }),
-            Err(TaffyBlueprintError::Prune)
+            Err(TaffyBlueprintError::Prune("Root needs an id".into()))
         );
 
         assert_eq!(

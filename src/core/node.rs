@@ -130,7 +130,7 @@ where
     }
 }
 #[cfg(test)]
-use crate::node_test::compare_style;
+use crate::core::node_test::compare_style;
 #[cfg(not(test))]
 #[inline(always)]
 fn compare_style(s1: &Style, s2: &Style) -> bool {
