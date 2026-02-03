@@ -4,7 +4,7 @@ use taffy::TaffyError;
 pub enum TaffyBlueprintError {
     Taffy(TaffyError),
     TaffyNodeInner,
-    TaffyNodeRaw,
+    TaffyNodeRaw(String),
     Json(String),
     Prune(String),
 }

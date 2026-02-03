@@ -46,7 +46,9 @@ where
                     }
                 }
             } else {
-                Err(TaffyBlueprintError::TaffyNodeRaw)
+                Err(TaffyBlueprintError::TaffyNodeRaw(
+                    "Style missing with empty children".into(),
+                ))
             }
         } else {
             let taffy_items: Result<Vec<_>, _> = items
