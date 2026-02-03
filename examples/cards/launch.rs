@@ -5,6 +5,7 @@ pub enum LauchType {
     Label,
     Value,
     ValueBar,
+    ValueBarItem,
     Card,
 }
 

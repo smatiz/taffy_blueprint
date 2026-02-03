@@ -11,12 +11,17 @@ pub struct BoardComponent {
 }
 
 impl BoardComponent {
-    pub fn new(characters: &[Character]) -> Self {
+    pub fn new(text_drawer: &TextDrawer, characters: &[Character]) -> Self {
         Self {
             cards: characters
                 .into_iter()
                 .enumerate()
-                .map(|(i, c)| ComponentId::new(&format!("{}", i), CardComponent::new(c.clone())))
+                .map(|(i, c)| {
+                    ComponentId::new(
+                        &format!("{}", i),
+                        CardComponent::new(text_drawer, c.clone()),
+                    )
+                })
                 .collect(),
         }
     }

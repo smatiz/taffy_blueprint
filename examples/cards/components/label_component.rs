@@ -20,15 +20,7 @@ impl Component for LabelComponent {
     fn draw(&self, text_drawer: &TextDrawer, rects: &TaffyRectNode<()>) {
         text_drawer.draw_exact(&self.text, rects.rect().x, rects.rect().y, BLACK);
     }
-    // pub fn draw_offset(&self, text_drawer: &TextDrawer, offset: &Vec2, rects: &TaffyRectNode<()>) {
-    //     text_drawer.draw_exact(
-    //         &self.text,
-    //         offset.x + rects.rect().x,
-    //         offset.y + rects.rect().y,
-    //         BLACK,
-    //     );
-    // }
-    fn update(&mut self, rects: &TaffyRectNode<()>) -> UpdateResult {
+    fn update(&mut self, _rects: &TaffyRectNode<()>) -> UpdateResult {
         UpdateResult::Continue
     }
 }

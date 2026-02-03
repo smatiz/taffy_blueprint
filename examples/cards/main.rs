@@ -11,15 +11,25 @@ use macroquad::prelude::*;
 #[macroquad::main("cards")]
 async fn main() {
     // You can change this to render a sub-component
-    let launch = LauchType::ValueBar;
+    let launch = LauchType::Card;
 
     let td = TextDrawer::new(16).await;
     let mut launch = match launch {
-        LauchType::Board => Launch::new(td, Box::new(BoardComponent::new(CHARACTERS))),
-        LauchType::Card => Launch::new(td, Box::new(CardComponent::new(CHARACTERS[0].clone()))),
-        LauchType::Value => Launch::new(td, Box::new(ValueComponent::new("Simpathy".into(), 5))),
-        LauchType::ValueBar => Launch::new(td, Box::new(ValueBarComponent::new(3))),
+        LauchType::Board => {
+            let comp = Box::new(BoardComponent::new(&td, &CHARACTERS.clone()));
+            Launch::new(td, comp)
+        }
+        LauchType::Card => {
+            let comp = Box::new(CardComponent::new(&td, CHARACTERS[0].clone()));
+            Launch::new(td, comp)
+        }
+        LauchType::Value => Launch::new(
+            td,
+            Box::new(ValueComponent::new("Simpathy".into(), 5, 15.0)),
+        ),
+        LauchType::ValueBar => Launch::new(td, Box::new(ValueBarComponent::new(2))),
         LauchType::Label => Launch::new(td, Box::new(LabelComponent::new("test".into()))),
+        LauchType::ValueBarItem => Launch::new(td, Box::new(ValueBarItemComponent::new(true))),
     }
     .await;
     loop {

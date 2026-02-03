@@ -9,6 +9,7 @@ mod label_component;
 mod text_drawer;
 mod types;
 mod value_bar_component;
+mod value_bar_item_component;
 mod value_component;
 
 pub use board_component::BoardComponent;
@@ -21,4 +22,5 @@ pub use label_component::LabelComponent;
 pub use text_drawer::TextDrawer;
 pub use types::UpdateResult;
 pub use value_bar_component::ValueBarComponent;
+pub use value_bar_item_component::ValueBarItemComponent;
 pub use value_component::ValueComponent;

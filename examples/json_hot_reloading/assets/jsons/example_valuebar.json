@@ -2,29 +2,122 @@
     "id": "root",
     "debug_label": "N #00AA00 *",
     "style": {
-        "size": "100 100",
-        "padding": "10 10 10 10",
+        "size": "600 100"
     },
     "children": [
         {
             "id": "values",
             "debug_label": "None #000000 x",
             "style": {
-                "aspect_ratio": "6.0",
-                "size": "* 100%",
-                "flex_direction": "Row",
-                "display": "Flex"
-            },
+                "size": "100% 100%",
+                "display": "Grid",
+                "grid_template_rows": ["100%"],
+                "grid_template_columns": ["16.66%", "16.66%", "16.66%", "16.66%", "16.66%", "16.66%"],
+              },
             "children": [
                 {
                     "style": {
-                        "aspect_ratio": "1.0",
-                        "size": "* 100%",
+                    "grid_row": ["line 1", "line 1"],
+                    "grid_column": ["line 1", "line 1"],
+                    },
+                    "children": [
+                       {
+                            "id": "value1",
+                            "style": {
+                                "padding": "10% 10% 10% 10%"
+                            },
+                            "debug_label": "NW #FF0000 *",
+                            "children": [
+                                {
+                                    "id": "value1b",
+                                    "style": {
+                                        "aspect_ratio": "1.0",
+                                        "size": "100% 100%"
+                                    },
+                                    "debug_label": "NW #FF0000 -"
+                                }
+                            ]
+                        }
+                    ]
+                },
+               {
+                    "style": {
+                    "grid_row": ["line 1", "line 1"],
+                    "grid_column": ["line 2", "line 2"],
+                        "size": " 100% 100%",
                         "padding": "10 10 10 10"
                     },
                     "children": [
                         {
-                            "id": "value1",
+                            "id": "value2",
+                            "style": {
+                                "aspect_ratio": "1.0",
+                                "size": "* 100%"
+                            },
+                            "debug_label": "NW #FF0000 *"
+                        }
+                    ]
+                }, {
+                    "style": {
+                    "grid_row": ["line 1", "line 1"],
+                    "grid_column": ["line 3", "line 3"],
+                        "size": " 100% 100%",
+                        "padding": "10 10 10 10"
+                    },
+                    "children": [
+                        {
+                            "id": "value3",
+                            "style": {
+                                "aspect_ratio": "1.0",
+                                "size": "* 100%"
+                            },
+                            "debug_label": "NW #FF0000 *"
+                        }
+                    ]
+                }, {
+                    "style": {
+                    "grid_row": ["line 1", "line 1"],
+                    "grid_column": ["line 4", "line 4"],
+                        "size": " 100% 100%",
+                        "padding": "10 10 10 10"
+                    },
+                    "children": [
+                        {
+                            "id": "value4",
+                            "style": {
+                                "aspect_ratio": "1.0",
+                                "size": "* 100%"
+                            },
+                            "debug_label": "NW #FF0000 *"
+                        }
+                    ]
+                }, {
+                    "style": {
+                    "grid_row": ["line 1", "line 1"],
+                    "grid_column": ["line 5", "line 5"],
+                        "size": " 100% 100%",
+                        "padding": "10 10 10 10"
+                    },
+                    "children": [
+                        {
+                            "id": "value5",
+                            "style": {
+                                "aspect_ratio": "1.0",
+                                "size": "* 100%"
+                            },
+                            "debug_label": "NW #FF0000 *"
+                        }
+                    ]
+                }, {
+                    "style": {
+                    "grid_row": ["line 1", "line 1"],
+                    "grid_column": ["line 6", "line 6"],
+                        "size": " 100% 100%",
+                        "padding": "10 10 10 10"
+                    },
+                    "children": [
+                        {
+                            "id": "value6",
                             "style": {
                                 "aspect_ratio": "1.0",
                                 "size": "* 100%"
@@ -33,47 +126,6 @@
                         }
                     ]
                 },
-                {
-                    "id": "value2",
-                    "style": {
-                        "aspect_ratio": "1.0",
-                        "size": "* 100%",
-                        "margin": "10 10 10 10"
-                    }
-                },
-                {
-                    "id": "value3",
-                    "style": {
-                        "aspect_ratio": "1.0",
-                        "size": "* 100%",
-                        "margin": "10 10 10 10"
-                    }
-                },
-                {
-                    "id": "value4",
-                    "style": {
-                        "aspect_ratio": "1.0",
-                        "size": "* 100%",
-                        "margin": "10 10 10 10"
-                    },
-                    "debug_label": "N #000000 *",
-                },
-                {
-                    "id": "value5",
-                    "style": {
-                        "aspect_ratio": "1.0",
-                        "size": "* 100%",
-                        "margin": "10 10 10 10"
-                    }
-                },
-                {
-                    "id": "value6",
-                    "style": {
-                        "aspect_ratio": "1.0",
-                        "size": "* 100%",
-                        "margin": "10 10 10 10"
-                    }
-                }
             ]
         }
     ]
