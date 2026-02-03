@@ -1,0 +1,80 @@
+{
+    "id": "root",
+    "debug_label": "N #00AA00 *",
+    "style": {
+        "size": "100 100",
+        "padding": "10 10 10 10",
+    },
+    "children": [
+        {
+            "id": "values",
+            "debug_label": "None #000000 x",
+            "style": {
+                "aspect_ratio": "6.0",
+                "size": "* 100%",
+                "flex_direction": "Row",
+                "display": "Flex"
+            },
+            "children": [
+                {
+                    "style": {
+                        "aspect_ratio": "1.0",
+                        "size": "* 100%",
+                        "padding": "10 10 10 10"
+                    },
+                    "children": [
+                        {
+                            "id": "value1",
+                            "style": {
+                                "aspect_ratio": "1.0",
+                                "size": "* 100%"
+                            },
+                            "debug_label": "NW #FF0000 *"
+                        }
+                    ]
+                },
+                {
+                    "id": "value2",
+                    "style": {
+                        "aspect_ratio": "1.0",
+                        "size": "* 100%",
+                        "margin": "10 10 10 10"
+                    }
+                },
+                {
+                    "id": "value3",
+                    "style": {
+                        "aspect_ratio": "1.0",
+                        "size": "* 100%",
+                        "margin": "10 10 10 10"
+                    }
+                },
+                {
+                    "id": "value4",
+                    "style": {
+                        "aspect_ratio": "1.0",
+                        "size": "* 100%",
+                        "margin": "10 10 10 10"
+                    },
+                    "debug_label": "N #000000 *",
+                },
+                {
+                    "id": "value5",
+                    "style": {
+                        "aspect_ratio": "1.0",
+                        "size": "* 100%",
+                        "margin": "10 10 10 10"
+                    }
+                },
+                {
+                    "id": "value6",
+                    "style": {
+                        "aspect_ratio": "1.0",
+                        "size": "* 100%",
+                        "margin": "10 10 10 10"
+                    }
+                }
+            ]
+        }
+    ]
+}

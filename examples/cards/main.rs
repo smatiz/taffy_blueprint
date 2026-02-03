@@ -1,85 +1,30 @@
-mod board;
-mod card;
-mod character;
-pub mod h_clickable;
-mod label;
-mod taffy_child;
-mod text_drawer;
-mod types;
-mod value_component;
-
+mod components;
+mod data;
+mod launch;
+use crate::{components::*, data::CHARACTERS, launch::*};
 use macroquad::prelude::*;
-use taffy::prelude::*;
-use taffy_blueprint::prelude::*;
 
-use crate::{
-    board::Board,
-    character::{Character, Class},
-    text_drawer::TextDrawer,
-};
-
-fn conf() -> Conf {
-    Conf {
-        window_title: "cards".to_string(),
-        fullscreen: false,
-        ..Default::default()
-    }
-}
-
-// Mage,
-// Warrior,
-// Rogue,
-#[macroquad::main(conf)]
+/// To show how taffy_blueprint::Node can be used
+/// Each Component has a layout method that returns a Node
+/// each parent component build his Node with children Node
+/// each component is standalone
+#[macroquad::main("cards")]
 async fn main() {
-    let mut board = Board::new();
-    let text_drawer = TextDrawer::new(16).await;
-    board.start(vec![
-        Character {
-            class: Class::Mage,
-            agility: 2,
-            intelligence: 3,
-            mana: 6,
-            strength: 1,
-        },
-        Character {
-            class: Class::Warrior,
-            agility: 0,
-            intelligence: 1,
-            mana: 0,
-            strength: 6,
-        },
-        Character {
-            class: Class::Rogue,
-            agility: 5,
-            intelligence: 4,
-            mana: 0,
-            strength: 2,
-        },
-    ]);
+    // You can change this to render a sub-component
+    let launch = LauchType::ValueBar;
+
+    let td = TextDrawer::new(16).await;
+    let mut launch = match launch {
+        LauchType::Board => Launch::new(td, Box::new(BoardComponent::new(CHARACTERS))),
+        LauchType::Card => Launch::new(td, Box::new(CardComponent::new(CHARACTERS[0].clone()))),
+        LauchType::Value => Launch::new(td, Box::new(ValueComponent::new("Simpathy".into(), 5))),
+        LauchType::ValueBar => Launch::new(td, Box::new(ValueBarComponent::new(3))),
+        LauchType::Label => Launch::new(td, Box::new(LabelComponent::new("test".into()))),
+    }
+    .await;
     loop {
         clear_background(WHITE);
-        let node = board.layout(&text_drawer);
-        if !matches!(node, Node::Empty) {
-            let t = TaffyNode::from_layout_node(Node::Layout(
-                "root".into(),
-                Style {
-                    size: Size {
-                        width: length(screen_width()),
-                        height: length(screen_height()),
-                    },
-                    ..Default::default()
-                },
-                vec![node],
-            ));
-            match t {
-                Ok(t) => {
-                    let rects = TaffyRectNode::new(t);
-                    board.update(&rects);
-                    board.draw(&text_drawer, &vec2(0.0, 0.0), &rects);
-                }
-                Err(e) => println!("Error: {:?}", e),
-            }
-        }
+        launch.update();
         next_frame().await;
     }
 }

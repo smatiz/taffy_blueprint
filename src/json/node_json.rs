@@ -46,17 +46,21 @@ impl TryFrom<String> for Private {
         }
         if let Some(caps) = RE.captures(&value) {
             let position = serde_json5::from_str(&format!("\"{}\"", &caps["position"]));
-            match position {
-                Ok(position) => Ok(Private(DrawTag {
-                    position,
-                    color: caps["color"].into(),
-                    info: match caps["info"].into() {
-                        "*" => DrawTagText::Id,
-                        "" => DrawTagText::None,
-                        s => DrawTagText::Text(s.into()),
-                    },
-                })),
-                Err(_) => Err(TaffyBlueprintError::Json("Invalid DebugLabel".into())),
+            if let (Some(color), Some(info)) = (caps.name("color"), caps.name("info")) {
+                match position {
+                    Ok(position) => Ok(Private(DrawTag {
+                        position,
+                        color: color.as_str().into(),
+                        info: match info.as_str() {
+                            "*" => DrawTagText::Id,
+                            "x" => DrawTagText::None,
+                            s => DrawTagText::Text(s.into()),
+                        },
+                    })),
+                    Err(_) => Err(TaffyBlueprintError::Json("Invalid DebugLabel".into())),
+                }
+            } else {
+                Err(TaffyBlueprintError::Json("Invalid DebugLabel".into()))
             }
         } else {
             Err(TaffyBlueprintError::Json("Invalid DebugLabel".into()))

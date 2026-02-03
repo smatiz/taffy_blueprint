@@ -30,6 +30,7 @@ pub enum DrawTagText {
 #[derive(Default, PartialEq, Debug, Clone, Deserialize, Serialize)]
 pub enum DrawTagPosition {
     #[default]
+    None,
     Center,
     N,
     S,
@@ -48,46 +49,49 @@ impl DrawTagPosition {
         rect_height: f32,
         text_width: f32,
         text_height: f32,
-    ) -> Result<(f32, f32), TaffyBlueprintError> {
-        let (jc, ai) = match self {
-            DrawTagPosition::Center => (JustifyContent::Center, AlignItems::Center),
-            DrawTagPosition::N => (JustifyContent::Center, AlignItems::Start),
-            DrawTagPosition::S => (JustifyContent::Center, AlignItems::End),
-            DrawTagPosition::W => (JustifyContent::Start, AlignItems::Center),
-            DrawTagPosition::E => (JustifyContent::End, AlignItems::Center),
-            DrawTagPosition::NE => (JustifyContent::Start, AlignItems::Start),
-            DrawTagPosition::NW => (JustifyContent::Center, AlignItems::Start),
-            DrawTagPosition::SE => (JustifyContent::End, AlignItems::End),
-            DrawTagPosition::SW => (JustifyContent::Start, AlignItems::End),
-        };
-
-        let node = Node::<Self>::Layout(
-            "node".into(),
-            Style {
-                size: Size {
-                    width: length(rect_width),
-                    height: length(rect_height),
-                },
-                flex_direction: taffy::FlexDirection::Row,
-                justify_content: Some(jc),
-                align_items: Some(ai),
-                ..Default::default()
-            },
-            vec![Node::Leaf(
-                "debug".into(),
+    ) -> Result<Option<(f32, f32)>, TaffyBlueprintError> {
+        if let Some((jc, ai)) = match self {
+            DrawTagPosition::Center => Some((JustifyContent::Center, AlignItems::Center)),
+            DrawTagPosition::N => Some((JustifyContent::Center, AlignItems::Start)),
+            DrawTagPosition::S => Some((JustifyContent::Center, AlignItems::End)),
+            DrawTagPosition::W => Some((JustifyContent::Start, AlignItems::Center)),
+            DrawTagPosition::E => Some((JustifyContent::End, AlignItems::Center)),
+            DrawTagPosition::NW => Some((JustifyContent::Start, AlignItems::Start)),
+            DrawTagPosition::NE => Some((JustifyContent::End, AlignItems::Start)),
+            DrawTagPosition::SW => Some((JustifyContent::Start, AlignItems::End)),
+            DrawTagPosition::SE => Some((JustifyContent::End, AlignItems::End)),
+            DrawTagPosition::None => None,
+        } {
+            let node = Node::<Self>::Layout(
+                "node".into(),
                 Style {
                     size: Size {
-                        width: length(text_width),
-                        height: length(text_height),
+                        width: length(rect_width),
+                        height: length(rect_height),
                     },
+                    flex_direction: taffy::FlexDirection::Row,
+                    justify_content: Some(jc),
+                    align_items: Some(ai),
                     ..Default::default()
                 },
-            )],
-        );
+                vec![Node::Leaf(
+                    "debug".into(),
+                    Style {
+                        size: Size {
+                            width: length(text_width),
+                            height: length(text_height),
+                        },
+                        ..Default::default()
+                    },
+                )],
+            );
 
-        TaffyNode::from_layout_node(node).map(|taffy_node| {
-            let d = &taffy_node.children["debug"];
-            (d.layout.location.x, d.layout.location.y)
-        })
+            TaffyNode::from_layout_node(node).and_then(|taffy_node| {
+                let d = &taffy_node.children["debug"];
+                Ok(Some((d.layout.location.x, d.layout.location.y)))
+            })
+        } else {
+            Ok(None)
+        }
     }
 }

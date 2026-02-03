@@ -9,7 +9,7 @@ pub struct TextDrawer {
 
 impl TextDrawer {
     pub async fn new(font_size: u16) -> Self {
-        let font = load_ttf_font("assets/RobotoMono-Regular.ttf").await.ok();
+        let font = None; // load_ttf_font("assets/RobotoMono-Regular.ttf").await.ok();
         Self {
             font,
             font_size,

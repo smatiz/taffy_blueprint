@@ -29,7 +29,7 @@ pub struct StyleJson {
     #[serde(default)]
     pub max_size: String,
     #[serde(default)]
-    pub aspect_ratio: Option<f32>,
+    pub aspect_ratio: String,
 
     #[serde(default)]
     pub margin: String,
@@ -102,7 +102,7 @@ impl From<StyleJson> for Style {
             size: to_size(&s.size),
             min_size: to_size(&s.min_size),
             max_size: to_size(&s.max_size),
-            aspect_ratio: s.aspect_ratio,
+            aspect_ratio: s.aspect_ratio.parse().ok(),
 
             margin: to_rect(&s.margin, Rect::zero()),
             padding: to_rect_lp(&s.padding),
