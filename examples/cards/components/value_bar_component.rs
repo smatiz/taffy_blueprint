@@ -44,11 +44,8 @@ impl Component for ValueBarComponent {
                 grid_template_rows: vec![percent(1.0)],
                 grid_template_columns: (0..SIZE).map(|_| percent(0.166)).collect(),
                 size: Size {
-                    // width: percent(1.0),
                     width: auto(),
                     height: percent(1.0),
-                    // width: length(400.0),
-                    // height: length(100.0),
                 },
                 aspect_ratio: Some(SIZE as f32),
                 ..Default::default()
@@ -87,18 +84,3 @@ impl Component for ValueBarComponent {
         UpdateResult::Continue
     }
 }
-
-// "style": {
-//     "size": "100% 100%",
-//     "display": "Grid",
-//     "grid_template_rows": ["100%"],
-//     "grid_template_columns": ["16.66%", "16.66%", "16.66%", "16.66%", "16.66%", "16.66%"],
-//   },
-// "children": [
-//     {
-//         "style": {
-//         "grid_row": ["line 1", "line 1"],
-//         "grid_column": ["line 1", "line 1"],
-//         },
-//         "children": [
-//            {

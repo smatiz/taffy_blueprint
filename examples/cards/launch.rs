@@ -1,5 +1,6 @@
 use crate::components::*;
 
+#[allow(warnings)]
 pub enum LauchType {
     Board,
     Label,
@@ -22,11 +23,16 @@ impl Launch {
         }
     }
 
-    pub fn update(&mut self) {
+    pub fn update(&mut self) -> UpdateResult {
         let rects = crate::components::helper_macroquad::wrapped_into_screen_root_node(
             self.component.layout(&self.text_drawer),
         );
-        self.component.update(&rects);
-        self.component.draw(&self.text_drawer, &rects);
+        match self.component.update(&rects) {
+            UpdateResult::Continue => {
+                self.component.draw(&self.text_drawer, &rects);
+                UpdateResult::Continue
+            }
+            UpdateResult::End(c) => UpdateResult::End(c),
+        }
     }
 }

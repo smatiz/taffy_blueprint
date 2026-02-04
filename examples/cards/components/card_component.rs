@@ -17,10 +17,10 @@ const ITEMS: [&str; 4] = ["Mana", "Strength", "Agility", "Intelligence"];
 impl CardComponent {
     pub fn new(text_drawer: &TextDrawer, character: Character) -> Self {
         let label_name =
-            ComponentId::new("name".into(), LabelComponent::new(character.class.name()));
+            ComponentId::new("name".into(), LabelComponent::new(character.name.into()));
         let label_class_name = ComponentId::new(
             "class_name".into(),
-            LabelComponent::new(character.class.class_name()),
+            LabelComponent::new(character.class.name()),
         );
 
         let height = ITEMS
@@ -55,53 +55,48 @@ impl CardComponent {
             character,
         }
     }
-    pub fn character(&self) -> &Character {
-        &self.character
-    }
 }
 impl Component for CardComponent {
     fn update(&mut self, rects: &TaffyRectNode<()>) -> UpdateResult {
-        if let Some(rects) = rects.get_child("card") {
-            let rc = helper_clickable::search(rects.rect());
-            match rc {
-                ClickableResult::Hover => self.hover = true,
-                ClickableResult::Clicked => {
-                    return UpdateResult::End;
-                }
-                ClickableResult::None => self.hover = false,
+        let rc = helper_clickable::search(rects.rect());
+        match rc {
+            ClickableResult::Hover => self.hover = true,
+            ClickableResult::Clicked => {
+                return UpdateResult::End(self.character.clone());
             }
+            ClickableResult::None => self.hover = false,
         }
         UpdateResult::Continue
     }
     fn draw(&self, text_drawer: &TextDrawer, rects: &TaffyRectNode<()>) {
-        if let Some(rects) = rects.get_child("card") {
-            let rect = rects.rect();
-            draw_rectangle_lines(
-                rect.x,
-                rect.y,
-                rect.w,
-                rect.h,
-                if self.hover { 3.0 } else { 1.0 },
-                BLACK,
-            );
-            self.label_name
+        let rect = rects.rect();
+        draw_rectangle_lines(
+            rect.x,
+            rect.y,
+            rect.w,
+            rect.h,
+            if self.hover { 3.0 } else { 1.0 },
+            BLACK,
+        );
+        self.label_name
+            .item
+            .draw(text_drawer, rects.get_child(&self.label_name.id).unwrap());
+        self.character
+            .class
+            .draw(rects.get_child("character_icon").unwrap().rect());
+        self.label_class_name.item.draw(
+            text_drawer,
+            rects.get_child(&self.label_class_name.id).unwrap(),
+        );
+        for value in self.values.iter() {
+            value
                 .item
-                .draw(text_drawer, rects.get_child(&self.label_name.id).unwrap());
-            self.label_class_name.item.draw(
-                text_drawer,
-                rects.get_child(&self.label_class_name.id).unwrap(),
-            );
-            for value in self.values.iter() {
-                value
-                    .item
-                    .draw(text_drawer, rects.get_child(&value.id).unwrap());
-            }
+                .draw(text_drawer, rects.get_child(&value.id).unwrap());
         }
     }
 
     fn layout(&self, text_drawer: &TextDrawer) -> Node<()> {
-        Node::Layout(
-            "card".into(),
+        Node::Anonym(
             Style {
                 ..h_taffy::style_auto()
             },
@@ -109,7 +104,6 @@ impl Component for CardComponent {
                 Style {
                     flex_direction: FlexDirection::Column,
                     align_items: Some(AlignItems::Center),
-                    // justify_content: Some(JustifyContent::Center),
                     padding: taffy::prelude::Rect {
                         left: length(10.0),
                         right: length(10.0),
@@ -131,12 +125,26 @@ impl Component for CardComponent {
                         flex_grow: 0.05,
                         ..Default::default()
                     }),
+                    Node::Leaf(
+                        "character_icon".into(),
+                        Style {
+                            size: Size {
+                                width: length(50.0),
+                                height: length(50.0),
+                            },
+                            ..Default::default()
+                        },
+                    ),
+                    Node::LeafAnonym(Style {
+                        flex_grow: 0.05,
+                        ..Default::default()
+                    }),
                     Node::Id(
                         self.label_class_name.id.clone(),
                         vec![self.label_class_name.item.layout(text_drawer)],
                     ),
                     Node::LeafAnonym(Style {
-                        flex_grow: 0.1,
+                        flex_grow: 0.3,
                         ..Default::default()
                     }),
                 ])
@@ -150,15 +158,13 @@ impl Component for CardComponent {
                                 top: length(10.0),
                                 right: length(10.0),
                             },
+                            align_self: Some(AlignItems::Start),
+                            justify_self: Some(JustifyItems::Start),
                             ..h_taffy::style_auto()
                         },
                         value.item.layout(text_drawer).into(),
                     )
                 }))
-                // .chain(std::iter::once(Node::LeafAnonym(Style {
-                //     flex_grow: 2.0,
-                //     ..Default::default()
-                // })))
                 .collect(),
             )],
         )

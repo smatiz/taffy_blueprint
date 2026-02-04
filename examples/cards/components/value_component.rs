@@ -1,10 +1,8 @@
-use std::alloc::Layout;
-
 use super::*;
 use macroquad::prelude::*;
 use taffy::{
     prelude::{length, percent},
-    AlignItems, JustifyContent, Style,
+    JustifyContent, Style,
 };
 use taffy_blueprint::prelude::*;
 
@@ -38,7 +36,6 @@ impl Component for ValueComponent {
             Style {
                 flex_direction: taffy::FlexDirection::Column,
                 justify_content: Some(JustifyContent::Center),
-                // align_items: Some(AlignItems::Center),
                 ..Default::default()
             },
             vec![
@@ -53,12 +50,19 @@ impl Component for ValueComponent {
                     },
                     vec![self.name.item.layout(text_drawer)],
                 ),
+                Node::LeafAnonym(Style {
+                    size: taffy::Size {
+                        width: percent(1.0),
+                        height: length(self.height * 0.25),
+                    },
+                    ..Default::default()
+                }),
                 Node::Layout(
                     self.value.id.clone(),
                     Style {
                         size: taffy::Size {
                             width: percent(1.0),
-                            height: length(self.height),
+                            height: length(self.height * 2.0),
                         },
                         ..Default::default()
                     },

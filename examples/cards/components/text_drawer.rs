@@ -21,6 +21,7 @@ impl TextDrawer {
         measure_text(text, self.font.as_ref(), self.font_size, self.font_scale)
     }
 
+    #[allow(warnings)]
     pub fn draw_rect(&self, text: &str, rect_screen: &Rect, color: Color) {
         let flip_y = false;
         draw_text_ex(
@@ -57,6 +58,7 @@ impl TextDrawer {
         self.draw(text, x, y + m.offset_y, color);
     }
 
+    #[allow(warnings)]
     pub fn draw_centered_stretched(&self, text: &str, rect: &Rect, color: Color) {
         let measure_old = self.measure(text);
         let zoom = rect.h / measure_old.height;
@@ -79,6 +81,8 @@ impl TextDrawer {
             },
         );
     }
+
+    #[allow(warnings)]
     pub fn draw_centered(&self, text: &str, rect: &Rect, color: Color) {
         let m = self.measure(text);
         let x = rect.x + (rect.w - m.width) * 0.5;
@@ -86,80 +90,3 @@ impl TextDrawer {
         self.draw(text, x, y, color);
     }
 }
-
-// pub enum TextLayout {
-//     VerticalCentered,
-//     HorizontalCentered,
-//     Centered,
-//     Free,
-// }
-
-// #[derive(Default, Clone)]
-// pub struct Text {
-//     rect: Rect,
-//     offset_y: f32,
-//     pub text: String,
-//     pub color: Color,
-// }
-
-// impl Text {
-//     pub fn new() -> Self {
-//         Self {
-//             color: BLACK,
-//             ..Default::default()
-//         }
-//     }
-//     pub fn draw(&self, text_drawer: &TextDrawer) {
-//         text_drawer.draw(
-//             &self.text,
-//             self.rect.x,
-//             self.rect.y + self.offset_y,
-//             self.color,
-//         );
-//     }
-//     pub fn update(
-//         &mut self,
-//         text_drawer: &TextDrawer,
-//         x: f32,
-//         y: f32,
-//         horiz: HorizontalAlignment,
-//         vert: VerticalAlignment,
-//     ) {
-//         let m = text_drawer.measure(&self.text);
-//         self.rect = h_layout::get_rect(
-//             &Rect {
-//                 x,
-//                 y,
-//                 w: m.width,
-//                 h: m.height,
-//             },
-//             horiz,
-//             vert,
-//         );
-//         self.offset_y = m.offset_y;
-//     }
-
-//     pub fn rect(&self) -> &Rect {
-//         &self.rect
-//     }
-// }
-// #[derive(Clone, Debug)]
-// pub struct TextXXX {
-//     measure: TextDimensions,
-//     text: String,
-// }
-// impl TextXXX {
-//     pub fn new(text: String) -> Self {
-//         Self {
-//             measure: TextDimensions::default(),
-//             text,
-//         }
-//     }
-//     pub fn update(&mut self, text_drawer: &TextDrawer) {
-//         self.measure = text_drawer.measure(&self.text);
-//     }
-
-//     pub fn measure(&self) -> &TextDimensions {
-//         &self.measure
-//     }
-// }

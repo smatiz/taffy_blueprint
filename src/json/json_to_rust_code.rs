@@ -27,25 +27,5 @@ mod tests {
 }
 
 "#;
-
-        // let mut style = Style::<String>::default();
-        // style.align_content = None;
-        // let s = serde_json5::to_string(&style.align_content);
-        // println!("s {:?}", s);
-        // style.align_content = Some(taffy::AlignContent::FlexEnd);
-        // let s = serde_json5::to_string(&style.align_content);
-        // println!("s {:?}", s);
-
-        // style.size = taffy::Size {
-        //     width: length(123.4),
-        //     height: auto(),
-        // };
-        // if let Some(s) = serde_json5::to_string(&style.size.width).ok() {
-        //     println!("s {:?}", s);
-        // }
-
-        // let compact_length = style.size.width.into_raw();
-        // compact_length.uses_percentage()
-        // match  {}
     }
 }

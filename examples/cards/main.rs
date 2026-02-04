@@ -11,7 +11,7 @@ use macroquad::prelude::*;
 #[macroquad::main("cards")]
 async fn main() {
     // You can change this to render a sub-component
-    let launch = LauchType::Card;
+    let launch = LauchType::Board;
 
     let td = TextDrawer::new(16).await;
     let mut launch = match launch {
@@ -25,7 +25,7 @@ async fn main() {
         }
         LauchType::Value => Launch::new(
             td,
-            Box::new(ValueComponent::new("Simpathy".into(), 5, 15.0)),
+            Box::new(ValueComponent::new("Simpathy".into(), 5, 25.0)),
         ),
         LauchType::ValueBar => Launch::new(td, Box::new(ValueBarComponent::new(2))),
         LauchType::Label => Launch::new(td, Box::new(LabelComponent::new("test".into()))),
@@ -34,7 +34,13 @@ async fn main() {
     .await;
     loop {
         clear_background(WHITE);
-        launch.update();
+        match launch.update() {
+            UpdateResult::Continue => {}
+            UpdateResult::End(character) => {
+                println!("choosed {} ({})", character.name, character.class.name());
+                return;
+            }
+        }
         next_frame().await;
     }
 }

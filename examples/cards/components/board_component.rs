@@ -32,13 +32,15 @@ impl Component for BoardComponent {
         let max_width = self
             .cards
             .iter()
-            .map(|c| {
-                let (taffy_tree, node_id) = c.item.layout(text_drawer).to_taffy_tree();
+            .map(|card| {
+                let (taffy_tree, node_id) = card.item.layout(text_drawer).to_taffy_tree();
                 taffy_tree.layout(node_id).unwrap().content_size.width
             })
             .reduce(f32::max);
 
         if let Some(max_width) = max_width {
+            // let max_width = max_width + 100.0;
+            // println!("max_width {}", max_width);
             Node::Anonym(
                 Style {
                     display: Display::Grid,
@@ -79,7 +81,7 @@ impl Component for BoardComponent {
                                     Style {
                                         size: Size {
                                             width: length(max_width),
-                                            height: length(max_width * 4.0 / 3.0),
+                                            height: length(400.0),
                                         },
                                         ..Default::default()
                                     },
@@ -124,7 +126,7 @@ impl Component for BoardComponent {
             if let Some(r) = rects.get_child(&card.id) {
                 match card.item.update(r) {
                     UpdateResult::Continue => {}
-                    UpdateResult::End => return UpdateResult::End,
+                    UpdateResult::End(c) => return UpdateResult::End(c),
                 }
             }
         }
