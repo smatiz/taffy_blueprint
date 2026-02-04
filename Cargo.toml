@@ -1,12 +1,12 @@
 [package]
 name = "taffy_blueprint"
-version = "0.1.3"
+version = "0.1.4"
 authors = ["Stephane Matiz <stephane.matiz@gmail.com>"]
 edition = "2021"
 rust-version = "1.65"
 # include = ["src/**/*", "examples/**/*", "Cargo.toml", "README.md"]
-description = "A blueprint on top of a flexible UI layout library Taffy"
-# repository = "https://github.com/stephane.matiz/taffy_blueprint"
+description = "Declarative Tree and Json hot reloading for Taffy."
+repository = "https://github.com/stephane.matiz/taffy_blueprint"
 keywords = ["taffy", "macroquad", "hot-reload", "declarative"]
 categories = ["gui"]
 license = "MIT"
